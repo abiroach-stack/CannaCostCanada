@@ -637,7 +637,7 @@ const CLASSES={
 
 /* ── STATE ───────────────────────────────────────────────────────────────── */
 let curClass='dried', curIdx=0, lcOverride=false;
-let competitors=[], savedSets={}, pendingB64=null;
+let competitors=[], savedSets={}, pendingB64=null, pendingMime='image/png';
 
 /* ── HELPERS ─────────────────────────────────────────────────────────────── */
 const r5=v=>Math.ceil(v/0.05)*0.05;
@@ -724,7 +724,7 @@ function renderExcise(){
   if(c.et==='flower'){
     wrap.innerHTML=`<div class="g3" style="margin-bottom:.75rem;">
       <div class="fi"><label>Package weight (g)</label><div class="d">Total grams of flowering cannabis in this package — the number on the product stamp. e.g. 7 for a 7G bag, 1 for a 1G pre-roll.</div><input type="number" id="ex-g" step="0.1" value="${def.g||7}"/></div>
-      <div class="fi"><label>Your selling price to the board ($)</label><div class="d">What you charge the board — your landed cost. CRA compares 10% of this against the $1.00/g flat rate and taxes you at whichever is higher. Auto-fills from landed cost above.</div><input type="number" id="ex-sp" step="0.01" placeholder="Auto-fills from landed cost"/></div>
+      <div class="fi"><label>Your selling price to the board ($)</label><div class="d">What you charge the board — your landed cost. CRA compares 10% of this against the $1.00/g flat rate and taxes you at whichever is higher. Auto-fills from landed cost. Edit to override.</div><input type="number" id="ex-sp" step="0.01" placeholder="Auto-fills from landed cost"/></div>
       <div class="fi"><label>Excise payable ($)</label><div class="d">Auto-calculated. For most products the flat $1.00/g rate wins. Ad valorem only applies if your product is priced above ~$10/g.</div><input type="number" id="excise-display" readonly placeholder="—"/></div>
     </div>`;
   } else if(c.et==='thc'){
@@ -740,6 +740,14 @@ function renderExcise(){
     </div>`;
   }
   wrap.querySelectorAll('input:not([readonly])').forEach(el=>el.addEventListener('input',calc));
+  // Track manual edits to ex-sp so auto-fill doesn't overwrite user's value
+  const spEl=wrap.querySelector('#ex-sp');
+  if(spEl){
+    spEl.addEventListener('input',function(){
+      this.dataset.userSet=this.value?'1':'';
+      calc();
+    });
+  }
 }
 
 function renderSubcats(){
@@ -782,8 +790,34 @@ function renderNotice(){
 /* ── MAIN CALC ───────────────────────────────────────────────────────────── */
 function calc(){
   const c=cls(),s=sc(),rr=reg();
+
+  // ── Step 1: compute COGS and landed cost first ──────────────────────────
+  const fields=cogsVals();
+  const rawC=fields.reduce((a,f)=>a+f.v,0);
+  const st=$('cogs-st');if(st)st.textContent='$'+rawC.toFixed(2);
+
+  // First-pass excise using current ex-sp value (may be 0 on first load)
+  let{ex:exPre}=calcExcise();
+  const cogsLC=rawC+exPre;
+  const lcF=$('landed-cost');
+  let lc;
+  if(lcOverride){lc=parseFloat(lcF.value)||cogsLC;}
+  else{lc=cogsLC;if(cogsLC>0)lcF.value=cogsLC.toFixed(2);else lcF.value='';}
+
+  // Auto-fill "selling price to board" = landed cost for the ad valorem comparison.
+  // This is your landed cost — what you charge the board.
+  // Only auto-fills when user hasn't manually entered a different value.
+  const spf=$('ex-sp');
+  if(spf&&!spf.dataset.userSet){
+    spf.value=lc>0?lc.toFixed(2):'';
+  }
+
+  // ── Step 2: re-run excise now that selling price field is populated ──────
+  // This gives the correct flat vs ad valorem comparison with actual landed cost.
   const{ex,meth,rows}=calcExcise();
   const d=$('excise-display');if(d)d.value=ex.toFixed(3);
+  // Recalculate landed cost with correct excise (in case it changed on second pass)
+  if(!lcOverride){const lc2=rawC+ex;lc=lc2;if(lc2>0)lcF.value=lc2.toFixed(2);else lcF.value='';}
   $('excise-rows').innerHTML=rows.map(r=>`<div class="crow${r.pay?' hl':''}"><span class="cl">${r.win?'<strong>✓ </strong>':''}${r.bold?'<strong>'+r.l+'</strong>':r.l}</span><span class="cv${r.win?' win':''}">${r.bold?'<strong>'+r.v+'</strong>':r.v}</span></div>`).join('');
 
   const mg=c.et==='thc'?(parseFloat($('ex-mg')?.value)||0):0;
@@ -791,18 +825,6 @@ function calc(){
   if(c.tcL&&mg>0){tn.className=mg>c.tcL?'notice show danger':'notice show ok';tn.textContent=mg>c.tcL?'⛔ Over legal limit: '+mg+'mg exceeds Health Canada maximum of '+c.tcL+'mg THC per container.':'✓ Within legal limit ('+mg+'mg of '+c.tcL+'mg max per container)';}
   else if(c.tuL&&mg>0&&!c.tcL){tn.className=mg>c.tuL?'notice show danger':'notice show ok';tn.textContent=mg>c.tuL?'⛔ Over legal limit: '+mg+'mg per unit exceeds Health Canada maximum of '+c.tuL+'mg.':'✓ Within legal limit ('+mg+'mg of '+c.tuL+'mg max per unit)';}
   else{tn.className='notice';}
-
-  const fields=cogsVals();
-  const rawC=fields.reduce((a,f)=>a+f.v,0);
-  const st=$('cogs-st');if(st)st.textContent='$'+rawC.toFixed(2);
-  const cogsLC=rawC+ex;
-
-  const lcF=$('landed-cost');
-  let lc;
-  if(lcOverride){lc=parseFloat(lcF.value)||cogsLC;}
-  else{lc=cogsLC;if(cogsLC>0)lcF.value=cogsLC.toFixed(2);else lcF.value='';}
-
-  const spf=$('ex-sp');if(spf&&!spf.value)spf.placeholder='Auto: '+fmt(lc);
 
   const badge=$('lc-badge'),ovn=$('ov-note');
   if(lcOverride){lcF.className='lc ov';ovn.className='ov-note show';badge.textContent='(manually set)';}
@@ -910,7 +932,9 @@ function toB64(file){return new Promise((res,rej)=>{const r=new FileReader();r.o
 async function handleImg(file){
   if(!file||!file.type.startsWith('image/'))return;
   pendingB64=await toB64(file);
-  const pv=$('img-prev');pv.src='data:'+file.type+';base64,'+pendingB64;pv.className='img-prev show';
+  // Store actual MIME type — API requires exact type (image/jpeg, image/png, image/gif, image/webp)
+  pendingMime=file.type||'image/png';
+  const pv=$('img-prev');pv.src='data:'+pendingMime+';base64,'+pendingB64;pv.className='img-prev show';
   $('clear-img').style.display='';$('parse-st').textContent='Screenshot ready — hit Extract to parse it';$('parse-st').className='parse-st';
 }
 function clearImg(){pendingB64=null;const pv=$('img-prev');pv.src='';pv.className='img-prev';$('clear-img').style.display='none';$('parse-st').textContent='';}
@@ -923,23 +947,74 @@ pa.addEventListener('drop',async e=>{e.preventDefault();pa.classList.remove('dra
 pa.addEventListener('paste',async e=>{for(const it of(e.clipboardData?.items||[])){if(it.type.startsWith('image/')){e.preventDefault();await handleImg(it.getAsFile());return;}}});
 
 /* ── PARSE ───────────────────────────────────────────────────────────────── */
+function extractJSON(raw){
+  // 1. try direct parse
+  try{return JSON.parse(raw.trim());}catch{}
+  // 2. strip markdown fences then try
+  const stripped=raw.replace(/```(?:json)?/g,'').trim();
+  try{return JSON.parse(stripped);}catch{}
+  // 3. pull first [...] block from anywhere in the response
+  const m=raw.match(/\[[\s\S]*\]/);
+  if(m){try{return JSON.parse(m[0]);}catch{}}
+  return null;
+}
+
 async function parseContent(){
   const txt=pa.value.trim(),hasImg=!!pendingB64;
   if(!hasImg&&!txt)return;
   const btn=$('parse-btn'),st=$('parse-st');
   btn.disabled=true;st.className='parse-st loading';st.textContent=hasImg?'Reading screenshot…':'Extracting products…';
-  const prompt=`Extract cannabis product listings from the ${hasImg?'screenshot image':'text'} below.\nReturn ONLY a raw JSON array — no markdown, no backticks.\nEach item: {"brand":"...","sku":"...","price":0.00,"grams":0}\nIf no products found, return: []`;
-  const content=hasImg?[{type:'image',source:{type:'base64',media_type:'image/png',data:pendingB64}},{type:'text',text:prompt}]:prompt+'\n\nText:\n'+txt.slice(0,4000);
+  const prompt=`Extract cannabis product listings from the ${hasImg?'screenshot image':'text'} below.
+Return ONLY a raw JSON array — no markdown, no backticks, no explanation before or after.
+Each item: {"brand":"...","sku":"...","price":0.00,"grams":0}
+- brand: the producer or brand name
+- sku: the product name including size/format
+- price: the retail or per-gram price as a number — if shown as $/g multiply by grams to get package price
+- grams: gram weight as a number if visible, otherwise 0
+If no products are found, return exactly: []`;
+
+  // Use the actual MIME type captured when image was loaded
+  const content=hasImg
+    ?[{type:'image',source:{type:'base64',media_type:pendingMime,data:pendingB64}},{type:'text',text:prompt}]
+    :prompt+'\n\nText:\n'+txt.slice(0,4000);
+
   try{
-    const res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,messages:[{role:'user',content}]})});
+    const res=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,messages:[{role:'user',content}]})
+    });
     const data=await res.json();
-    const text=(data.content||[]).filter(b=>b.type==='text').map(b=>b.text).join('');
-    const parsed=JSON.parse(text.replace(/```json|```/g,'').trim());
-    if(!Array.isArray(parsed)||!parsed.length){st.className='parse-st err';st.textContent=hasImg?'No products found in screenshot — try a clearer image or add manually':'No products found — check pasted text or try a screenshot';btn.disabled=false;return;}
-    let n=0;parsed.forEach(p=>{if(p.brand&&p.sku&&p.price>0){competitors.push({brand:String(p.brand),sku:String(p.sku),price:Number(p.price),grams:Number(p.grams)||0});n++;}});
+
+    // Handle API-level errors (rate limit, auth, etc.)
+    if(data.error){
+      st.className='parse-st err';
+      st.textContent='API error: '+data.error.message;
+      btn.disabled=false;return;
+    }
+
+    const raw=(data.content||[]).filter(b=>b.type==='text').map(b=>b.text).join('');
+    const parsed=extractJSON(raw);
+
+    if(!parsed||!Array.isArray(parsed)||!parsed.length){
+      st.className='parse-st err';
+      st.textContent=hasImg?'No products found in screenshot — try a clearer image or paste text instead':'No products found — check pasted text or try a screenshot';
+      btn.disabled=false;return;
+    }
+
+    let n=0;
+    parsed.forEach(p=>{
+      if(p.brand&&p.sku&&p.price>0){
+        competitors.push({brand:String(p.brand),sku:String(p.sku),price:Number(p.price),grams:Number(p.grams)||0});
+        n++;
+      }
+    });
     st.className='parse-st done';st.textContent='Added '+n+' product'+(n!==1?'s':'');
     pa.value='';if(hasImg)clearImg();calc();
-  }catch(e){st.className='parse-st err';st.textContent='Parse error — try again or add manually';}
+  }catch(e){
+    console.error('Parse error:',e);
+    st.className='parse-st err';st.textContent='Network or parse error — check console and try again';
+  }
   btn.disabled=false;
 }
 $('parse-btn').addEventListener('click',parseContent);
