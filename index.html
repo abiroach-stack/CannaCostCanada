@@ -1,99 +1,268 @@
-
-<h2 class="sr-only">Cannabis pricing calculator with Health Canada legal product classifications — 7 classes per Schedule 4 Cannabis Act</h2>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Canadian Cannabis LP Pricing Calculator</title>
 <style>
-*{box-sizing:border-box;margin:0;padding:0;}
-.app{padding:1rem 0;font-family:var(--font-sans);}
-.hd h1{font-size:18px;font-weight:500;color:var(--color-text-primary);margin-bottom:2px;}
-.hd p{font-size:12px;color:var(--color-text-secondary);}
-.hd .src{font-size:10px;color:var(--color-text-tertiary);margin-top:1px;}
-.class-tabs{display:flex;gap:5px;flex-wrap:wrap;margin:1rem 0 0;}
-.class-tab{padding:5px 12px;font-size:12px;border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);cursor:pointer;background:var(--color-background-primary);color:var(--color-text-secondary);}
-.class-tab.active{background:#1a1a1a;color:#fff;border-color:#1a1a1a;}
-.subcat-row{display:flex;gap:6px;flex-wrap:wrap;margin:8px 0 0;padding:8px 10px;background:var(--color-background-secondary);border-radius:var(--border-radius-md);border:0.5px solid var(--color-border-tertiary);}
-.sub-btn{padding:3px 10px;font-size:11px;border:0.5px solid var(--color-border-secondary);border-radius:100px;cursor:pointer;background:var(--color-background-primary);color:var(--color-text-secondary);}
-.sub-btn.active{background:#1a1a1a;color:#fff;border-color:#1a1a1a;}
-.class-label{font-size:10px;color:var(--color-text-tertiary);margin-right:6px;align-self:center;white-space:nowrap;}
-.sl{font-size:10px;font-weight:500;letter-spacing:.07em;text-transform:uppercase;color:var(--color-text-tertiary);margin:1rem 0 7px;}
-.sl.first{margin-top:.5rem;}
-.g2{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
-.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;}
-.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;}
-.fi{display:flex;flex-direction:column;gap:3px;}
-.fi label{font-size:11px;color:var(--color-text-secondary);}
-.fi input,.fi select{width:100%;padding:6px 9px;font-size:12px;border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);background:var(--color-background-primary);color:var(--color-text-primary);}
-.fi input:focus,.fi select:focus{outline:none;border-color:var(--color-border-primary);}
-.fi input[readonly]{background:var(--color-background-secondary);color:var(--color-text-secondary);}
-.fi .hint{font-size:10px;color:var(--color-text-tertiary);margin-top:1px;}
-hr{border:none;border-top:0.5px solid var(--color-border-tertiary);margin:1rem 0;}
-.card{background:var(--color-background-secondary);border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);padding:10px 12px;margin-bottom:.75rem;}
-.card .ctitle{font-size:11px;font-weight:500;color:var(--color-text-primary);margin-bottom:6px;}
-.card .crow{display:flex;justify-content:space-between;font-size:11px;padding:3px 0;border-bottom:.5px solid var(--color-border-tertiary);}
-.card .crow:last-child{border-bottom:none;}
-.card .cl{color:var(--color-text-secondary);}.card .cv{color:var(--color-text-primary);font-variant-numeric:tabular-nums;font-weight:500;}
-.card .crow.hl .cl,.card .crow.hl .cv{font-weight:500;color:var(--color-text-primary);}
-.win{color:var(--color-text-success)!important;font-weight:500!important;}
-.notice{display:none;font-size:11px;padding:7px 10px;border-radius:var(--border-radius-md);margin:.75rem 0;}
-.notice.show{display:block;}
-.notice.info{background:var(--color-background-info);color:var(--color-text-info);}
-.notice.warn{background:var(--color-background-warning);color:var(--color-text-warning);}
-.notice.danger{background:var(--color-background-danger);color:var(--color-text-danger);}
-.notice.ok{background:var(--color-background-success);color:var(--color-text-success);}
-.chain{display:flex;align-items:center;gap:5px;flex-wrap:wrap;margin:8px 0;}
-.cb{background:var(--color-background-secondary);border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);padding:8px 10px;text-align:center;min-width:82px;}
-.cb .cl{font-size:10px;color:var(--color-text-tertiary);margin-bottom:2px;}
-.cb .cv{font-size:14px;font-weight:500;color:var(--color-text-primary);}
-.cb .cs{font-size:10px;color:var(--color-text-tertiary);margin-top:1px;}
-.cb.acc{background:#1a1a1a;}.cb.acc .cl{color:rgba(255,255,255,.5);}.cb.acc .cv{color:#fff;}.cb.acc .cs{color:rgba(255,255,255,.35);}
-.cb.ok{background:var(--color-background-success);}.cb.ok .cl,.cb.ok .cv,.cb.ok .cs{color:var(--color-text-success);}
-.cb.wn{background:var(--color-background-warning);}.cb.wn .cl,.cb.wn .cv,.cb.wn .cs{color:var(--color-text-warning);}
-.cb.dn{background:var(--color-background-danger);}.cb.dn .cl,.cb.dn .cv,.cb.dn .cs{color:var(--color-text-danger);}
-.arr{color:var(--color-text-tertiary);font-size:12px;}
-.mbar{height:6px;border-radius:3px;background:var(--color-background-secondary);margin:6px 0;overflow:hidden;}
-.mfill{height:100%;border-radius:3px;transition:width .25s;}
-.mfill.g{background:#2d8a4e;}.mfill.w{background:#c47f17;}.mfill.b{background:#c43030;}
-.cogs-row{display:flex;justify-content:space-between;padding:5px 0;border-bottom:.5px solid var(--color-border-tertiary);font-size:12px;}
-.cogs-row:last-child{border-bottom:none;font-weight:500;}
-.cogs-row .rl{color:var(--color-text-secondary);}.cogs-row .rv{color:var(--color-text-primary);font-variant-numeric:tabular-nums;}
-.pft{width:100%;border-collapse:collapse;}
-.pft th{font-size:10px;font-weight:500;color:var(--color-text-tertiary);text-align:left;padding:5px 5px;border-bottom:.5px solid var(--color-border-tertiary);}
-.pft td{padding:5px 5px;border-bottom:.5px solid var(--color-border-tertiary);color:var(--color-text-primary);font-size:11px;vertical-align:middle;}
-.pft tr:last-child td{border-bottom:none;}
-.pft .nr{text-align:right;font-variant-numeric:tabular-nums;}.pft .str{font-weight:500;}
-.badge{display:inline-block;padding:1px 6px;font-size:10px;border-radius:100px;}
-.bg{background:var(--color-background-success);color:var(--color-text-success);}
-.br{background:var(--color-background-danger);color:var(--color-text-danger);}
-.bw{background:var(--color-background-warning);color:var(--color-text-warning);}
-.bn{background:var(--color-background-secondary);color:var(--color-text-secondary);}
-.model-pill{display:inline-block;padding:1px 5px;font-size:9px;border-radius:100px;}
-.m-gov{background:var(--color-background-info);color:var(--color-text-info);}
-.m-priv{background:var(--color-background-success);color:var(--color-text-success);}
-.m-hyb{background:var(--color-background-warning);color:var(--color-text-warning);}
-.pf-alert{font-size:11px;padding:7px 10px;border-radius:var(--border-radius-md);margin-top:7px;display:none;}
-.pf-alert.show{display:block;}.pf-alert.wn{background:var(--color-background-warning);color:var(--color-text-warning);}.pf-alert.ok{background:var(--color-background-success);color:var(--color-text-success);}
-.comp-table{width:100%;border-collapse:collapse;font-size:11px;}
-.comp-table th{font-size:10px;font-weight:500;color:var(--color-text-tertiary);padding:5px 5px;border-bottom:.5px solid var(--color-border-tertiary);}
-.comp-table td{padding:5px 5px;border-bottom:.5px solid var(--color-border-tertiary);color:var(--color-text-primary);}
-.comp-table tr:last-child td{border-bottom:none;}
-.parse-area{width:100%;min-height:72px;padding:8px 10px;font-size:12px;border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);background:var(--color-background-primary);color:var(--color-text-primary);resize:vertical;font-family:var(--font-mono);}
-.parse-area:focus{outline:none;border-color:var(--color-border-primary);}
-.parse-status{font-size:11px;color:var(--color-text-tertiary);margin-top:4px;min-height:16px;}
-.parse-status.loading{color:var(--color-text-warning);}.parse-status.done{color:var(--color-text-success);}.parse-status.err{color:var(--color-text-danger);}
-.action-row{display:flex;gap:8px;margin-top:1.25rem;flex-wrap:wrap;}
-.btn-p{padding:8px 16px;font-size:12px;background:#1a1a1a;color:#fff;border:none;border-radius:var(--border-radius-md);cursor:pointer;}
-.btn-s{padding:8px 16px;font-size:12px;background:transparent;color:var(--color-text-primary);border:.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);cursor:pointer;}
-.btn-parse{padding:7px 14px;font-size:12px;background:transparent;color:var(--color-text-primary);border:.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);cursor:pointer;}
-.btn-parse:disabled{opacity:.45;cursor:not-allowed;}
+:root {
+  --c-bg:           #ffffff;
+  --c-bg-2:         #f5f5f5;
+  --c-bg-3:         #ebebeb;
+  --c-border:       #d4d4d4;
+  --c-border-2:     #e5e5e5;
+  --c-text:         #171717;
+  --c-text-2:       #525252;
+  --c-text-3:       #a3a3a3;
+  --c-accent:       #26374a;
+  --c-success-bg:   #f0fdf4;
+  --c-success-text: #166534;
+  --c-success-border:#bbf7d0;
+  --c-warn-bg:      #fffbeb;
+  --c-warn-text:    #92400e;
+  --c-warn-border:  #fde68a;
+  --c-danger-bg:    #fef2f2;
+  --c-danger-text:  #991b1b;
+  --c-danger-border:#fecaca;
+  --c-info-bg:      #eff6ff;
+  --c-info-text:    #1e40af;
+  --c-info-border:  #bfdbfe;
+  --c-purple-bg:    #f5f3ff;
+  --c-purple-text:  #5b21b6;
+  --c-purple-border:#ddd6fe;
+  --c-goal-border:  #2d8a4e;
+  --radius:         6px;
+  --font: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --mono: 'SF Mono', 'Fira Code', Consolas, monospace;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: var(--font); background: var(--c-bg); color: var(--c-text); }
+
+/* ── HEADER ── */
+.hc-header { background: var(--c-accent); color: #fff; padding: 12px 20px; display: flex; align-items: center; gap: 12px; }
+.hc-flag { font-size: 22px; line-height: 1; }
+.hc-title { font-size: 15px; font-weight: 600; letter-spacing: .01em; }
+.hc-sub { font-size: 11px; opacity: .7; margin-top: 2px; }
+.hc-stripe { height: 4px; background: linear-gradient(90deg, #d4000a 50%, var(--c-accent) 50%); }
+
+/* ── PAGE WRAP ── */
+.wrap { max-width: 1120px; margin: 0 auto; padding: 20px 20px 60px; }
+
+/* ── SECTION LABELS ── */
+.sl { font-size: 10px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--c-text-3); margin: 1.25rem 0 8px; }
+.sl.first { margin-top: .5rem; }
+
+/* ── GRIDS ── */
+.g2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.g3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+.g4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+@media (max-width: 720px) { .g3, .g4 { grid-template-columns: 1fr 1fr; } }
+@media (max-width: 480px) { .g2, .g3, .g4 { grid-template-columns: 1fr; } }
+
+/* ── FORM FIELDS ── */
+.fi { display: flex; flex-direction: column; gap: 4px; }
+.fi label { font-size: 11px; color: var(--c-text-2); font-weight: 500; }
+.fi input, .fi select {
+  width: 100%; padding: 7px 10px; font-size: 13px; font-family: var(--font);
+  border: 1px solid var(--c-border); border-radius: var(--radius);
+  background: var(--c-bg); color: var(--c-text);
+}
+.fi input:focus, .fi select:focus { outline: none; border-color: #888; }
+.fi input[readonly] { background: var(--c-bg-2); color: var(--c-text-2); cursor: default; }
+.fi .hint { font-size: 10px; color: var(--c-text-3); margin-top: 1px; line-height: 1.4; }
+.fi input.goal-input { border-color: var(--c-goal-border); background: var(--c-success-bg); }
+
+hr { border: none; border-top: 1px solid var(--c-border-2); margin: 1.25rem 0; }
+
+/* ── TABS ── */
+.class-tabs { display: flex; gap: 6px; flex-wrap: wrap; margin: .75rem 0 0; }
+.class-tab {
+  padding: 6px 13px; font-size: 12px; font-family: var(--font);
+  border: 1px solid var(--c-border); border-radius: 100px;
+  cursor: pointer; background: var(--c-bg); color: var(--c-text-2);
+  transition: all .15s;
+}
+.class-tab:hover { background: var(--c-bg-2); }
+.class-tab.active { background: var(--c-accent); color: #fff; border-color: var(--c-accent); }
+
+.subcat-row {
+  display: flex; align-items: center; gap: 6px; flex-wrap: wrap;
+  margin: 10px 0 0; padding: 8px 12px;
+  background: var(--c-bg-2); border-radius: var(--radius); border: 1px solid var(--c-border-2);
+}
+.subcat-label { font-size: 11px; color: var(--c-text-3); white-space: nowrap; flex-shrink: 0; }
+.sub-btn {
+  padding: 3px 11px; font-size: 11px; font-family: var(--font);
+  border: 1px solid var(--c-border); border-radius: 100px;
+  cursor: pointer; background: var(--c-bg); color: var(--c-text-2);
+}
+.sub-btn:hover { background: var(--c-bg-3); }
+.sub-btn.active { background: var(--c-accent); color: #fff; border-color: var(--c-accent); }
+
+/* ── CARDS ── */
+.card {
+  background: var(--c-bg-2); border: 1px solid var(--c-border-2);
+  border-radius: var(--radius); padding: 12px 14px; margin-bottom: .75rem;
+}
+.card .ctitle { font-size: 11px; font-weight: 600; color: var(--c-text); margin-bottom: 8px; }
+.card .crow { display: flex; justify-content: space-between; font-size: 11px; padding: 4px 0; border-bottom: 1px solid var(--c-border-2); }
+.card .crow:last-child { border-bottom: none; }
+.card .cl { color: var(--c-text-2); }
+.card .cv { color: var(--c-text); font-variant-numeric: tabular-nums; font-weight: 500; }
+.card .crow.hl .cl, .card .crow.hl .cv { font-weight: 700; }
+.win { color: var(--c-success-text) !important; font-weight: 600 !important; }
+
+/* ── NOTICES ── */
+.notice { display: none; font-size: 12px; padding: 8px 12px; border-radius: var(--radius); margin: .75rem 0; line-height: 1.5; border: 1px solid transparent; }
+.notice.show { display: block; }
+.notice.info    { background: var(--c-info-bg);    color: var(--c-info-text);    border-color: var(--c-info-border); }
+.notice.warn    { background: var(--c-warn-bg);    color: var(--c-warn-text);    border-color: var(--c-warn-border); }
+.notice.danger  { background: var(--c-danger-bg);  color: var(--c-danger-text);  border-color: var(--c-danger-border); }
+.notice.ok      { background: var(--c-success-bg); color: var(--c-success-text); border-color: var(--c-success-border); }
+.notice.purple  { background: var(--c-purple-bg);  color: var(--c-purple-text);  border-color: var(--c-purple-border); }
+
+/* ── GOAL MSRP BLOCK ── */
+.goal-block {
+  background: var(--c-bg-2); border: 1px solid var(--c-goal-border);
+  border-radius: var(--radius); padding: 12px 14px; margin: 12px 0 .75rem;
+}
+.goal-block .gtitle { font-size: 12px; font-weight: 600; color: var(--c-text); margin-bottom: 10px; }
+.goal-block .gbadge { display: inline-block; padding: 1px 7px; font-size: 10px; border-radius: 100px; background: var(--c-success-bg); color: var(--c-success-text); margin-left: 5px; font-weight: 500; }
+.goal-result { display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap; }
+.goal-result .gr { flex: 1; min-width: 88px; background: var(--c-bg); border-radius: var(--radius); padding: 8px 10px; border: 1px solid var(--c-border-2); }
+.goal-result .gr .rl { font-size: 10px; color: var(--c-text-3); margin-bottom: 3px; }
+.goal-result .gr .rv { font-size: 14px; font-weight: 600; color: var(--c-text); }
+.goal-result .gr.ok .rv  { color: var(--c-success-text); }
+.goal-result .gr.wn .rv  { color: var(--c-warn-text); }
+.goal-result .gr.bad .rv { color: var(--c-danger-text); }
+
+/* ── PRICING CHAIN ── */
+.chain { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; margin: 10px 0; }
+.cb {
+  background: var(--c-bg-2); border: 1px solid var(--c-border);
+  border-radius: var(--radius); padding: 9px 11px; text-align: center; min-width: 86px;
+}
+.cb .cl { font-size: 10px; color: var(--c-text-3); margin-bottom: 3px; }
+.cb .cv { font-size: 15px; font-weight: 600; color: var(--c-text); }
+.cb .cs { font-size: 10px; color: var(--c-text-3); margin-top: 2px; }
+.cb.acc { background: var(--c-accent); border-color: var(--c-accent); }
+.cb.acc .cl { color: rgba(255,255,255,.5); }
+.cb.acc .cv { color: #fff; }
+.cb.acc .cs { color: rgba(255,255,255,.35); }
+.cb.ok  { background: var(--c-success-bg); border-color: var(--c-success-border); }
+.cb.ok  .cl, .cb.ok .cv, .cb.ok .cs { color: var(--c-success-text); }
+.cb.wn  { background: var(--c-warn-bg); border-color: var(--c-warn-border); }
+.cb.wn  .cl, .cb.wn .cv, .cb.wn .cs { color: var(--c-warn-text); }
+.cb.dn  { background: var(--c-danger-bg); border-color: var(--c-danger-border); }
+.cb.dn  .cl, .cb.dn .cv, .cb.dn .cs { color: var(--c-danger-text); }
+.arr { color: var(--c-text-3); font-size: 14px; }
+
+/* ── MARGIN BAR ── */
+.mbar { height: 7px; border-radius: 4px; background: var(--c-bg-3); margin: 7px 0; overflow: hidden; }
+.mfill { height: 100%; border-radius: 4px; transition: width .3s; background: var(--c-accent); }
+.mfill.g { background: #16a34a; }
+.mfill.w { background: #d97706; }
+.mfill.b { background: #dc2626; }
+
+/* ── COGS BREAKDOWN ── */
+.cogs-row { display: flex; justify-content: space-between; padding: 5px 0; border-bottom: 1px solid var(--c-border-2); font-size: 12px; }
+.cogs-row:last-child { border-bottom: none; font-weight: 600; }
+.cogs-row .rl { color: var(--c-text-2); }
+.cogs-row .rv { color: var(--c-text); font-variant-numeric: tabular-nums; }
+.cogs-row .hl { font-size: 10px; color: var(--c-text-3); margin-left: 4px; }
+
+/* ── METRIC ROW ── */
+.metric-row { display: flex; gap: 8px; margin-top: 8px; flex-wrap: wrap; }
+.metric-row .cb { flex: 1; min-width: 80px; }
+
+/* ── PRICE FLOOR ALERT ── */
+.pf-alert { font-size: 12px; padding: 8px 12px; border-radius: var(--radius); margin-top: 8px; display: none; border: 1px solid transparent; }
+.pf-alert.show { display: block; }
+.pf-alert.wn { background: var(--c-warn-bg);    color: var(--c-warn-text);    border-color: var(--c-warn-border); }
+.pf-alert.ok { background: var(--c-success-bg); color: var(--c-success-text); border-color: var(--c-success-border); }
+
+/* ── PROVINCE TABLE ── */
+.tbl-wrap { overflow-x: auto; }
+.pft { width: 100%; border-collapse: collapse; font-size: 12px; }
+.pft th { font-size: 10px; font-weight: 600; color: var(--c-text-3); text-align: left; padding: 6px 6px; border-bottom: 1px solid var(--c-border); white-space: nowrap; }
+.pft td { padding: 6px 6px; border-bottom: 1px solid var(--c-border-2); color: var(--c-text); vertical-align: middle; }
+.pft tr:last-child td { border-bottom: none; }
+.pft .nr { text-align: right; font-variant-numeric: tabular-nums; }
+.pft .str { font-weight: 700; }
+.pft .home-row { background: var(--c-bg-2); }
+
+/* ── BADGES ── */
+.badge { display: inline-block; padding: 2px 7px; font-size: 10px; border-radius: 100px; font-weight: 500; }
+.badge.bg { background: var(--c-success-bg); color: var(--c-success-text); }
+.badge.br { background: var(--c-danger-bg);  color: var(--c-danger-text); }
+.badge.bw { background: var(--c-warn-bg);    color: var(--c-warn-text); }
+.badge.bn { background: var(--c-bg-3);       color: var(--c-text-2); }
+.mpill { display: inline-block; padding: 1px 6px; font-size: 10px; border-radius: 100px; }
+.m-gov  { background: var(--c-info-bg);    color: var(--c-info-text); }
+.m-priv { background: var(--c-success-bg); color: var(--c-success-text); }
+.m-hyb  { background: var(--c-warn-bg);    color: var(--c-warn-text); }
+
+/* ── PRODUCER LICENCE TOGGLE ── */
+.ltoggle { display: flex; gap: 6px; }
+.lbtn { padding: 6px 14px; font-size: 12px; font-family: var(--font); border: 1px solid var(--c-border); border-radius: 100px; cursor: pointer; background: var(--c-bg); color: var(--c-text-2); }
+.lbtn:hover { background: var(--c-bg-2); }
+.lbtn.active { background: var(--c-accent); color: #fff; border-color: var(--c-accent); }
+.reg-chip { flex: 1; min-width: 200px; background: var(--c-bg-2); border: 1px solid var(--c-border-2); border-radius: var(--radius); padding: 8px 12px; display: flex; align-items: center; gap: 10px; }
+.reg-chip .rc-label { font-size: 12px; color: var(--c-text-2); flex: 1; }
+.reg-chip .rc-pct { font-size: 17px; font-weight: 600; color: var(--c-text); }
+.reg-chip .rc-note { font-size: 10px; color: var(--c-text-3); }
+
+/* ── COMP SET ── */
+.comp-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+.comp-table th { font-size: 10px; font-weight: 600; color: var(--c-text-3); padding: 6px 6px; border-bottom: 1px solid var(--c-border); text-align: left; }
+.comp-table td { padding: 6px 6px; border-bottom: 1px solid var(--c-border-2); color: var(--c-text); }
+.comp-table tr:last-child td { border-bottom: none; }
+.parse-area {
+  width: 100%; min-height: 80px; padding: 9px 11px; font-size: 12px;
+  font-family: var(--mono); border: 1px solid var(--c-border); border-radius: var(--radius);
+  background: var(--c-bg); color: var(--c-text); resize: vertical; line-height: 1.5;
+}
+.parse-area:focus { outline: none; border-color: #888; }
+.parse-status { font-size: 11px; color: var(--c-text-3); margin-top: 5px; min-height: 16px; }
+.parse-status.loading { color: var(--c-warn-text); }
+.parse-status.done    { color: var(--c-success-text); }
+.parse-status.err     { color: var(--c-danger-text); }
+
+/* ── BUTTONS ── */
+.action-row { display: flex; gap: 8px; margin-top: 1.5rem; flex-wrap: wrap; }
+.btn-p { padding: 9px 18px; font-size: 13px; font-family: var(--font); background: var(--c-accent); color: #fff; border: none; border-radius: var(--radius); cursor: pointer; font-weight: 500; }
+.btn-p:hover { background: #1a2b3c; }
+.btn-s { padding: 9px 18px; font-size: 13px; font-family: var(--font); background: transparent; color: var(--c-text); border: 1px solid var(--c-border); border-radius: var(--radius); cursor: pointer; }
+.btn-s:hover { background: var(--c-bg-2); }
+.btn-parse { padding: 7px 14px; font-size: 12px; font-family: var(--font); background: transparent; color: var(--c-text); border: 1px solid var(--c-border); border-radius: var(--radius); cursor: pointer; }
+.btn-parse:hover { background: var(--c-bg-2); }
+.btn-parse:disabled { opacity: .45; cursor: not-allowed; }
+
+/* ── FOOTER ── */
+.hc-footer {
+  margin-top: 3rem; padding: 14px 20px;
+  background: var(--c-bg-2); border-top: 3px solid var(--c-accent);
+  font-size: 11px; color: var(--c-text-3); line-height: 1.7;
+}
+.hc-footer strong { color: var(--c-text-2); }
 </style>
+</head>
+<body>
 
-<div class="app">
-<div class="hd">
-  <h1>Cannabis Pricing Calculator — Canada</h1>
-  <p>Product classes aligned with Health Canada Schedule 4 (Cannabis Act) · CRA-accurate excise · OCS/BCLDB/AGLC wholesale</p>
-  <div class="src">Health Canada composition guide · CRA EDM6-3 (Mar 2025) · Health Canada reg fee (Apr 2025) · OCS Oct 2025 · BCLDB Jan 2026 · AGLC bulletin</div>
+<div class="hc-header">
+  <div class="hc-flag">🍁</div>
+  <div>
+    <div class="hc-title">Canadian Cannabis LP Pricing Calculator</div>
+    <div class="hc-sub">Health Canada Schedule 4 · CRA EDM6-3 · OCS Markup Rates (official table)</div>
+  </div>
 </div>
+<div class="hc-stripe"></div>
 
-<!-- CLASS TABS — 7 legal classes per Schedule 4 -->
-<div class="sl first">Health Canada product class <span style="font-weight:400;color:var(--color-text-tertiary);">— Schedule 4, Cannabis Act</span></div>
+<div class="wrap">
+
+<!-- PRODUCT CLASS -->
+<div class="sl first">Product class — Schedule 4, Cannabis Act</div>
 <div class="class-tabs" id="class-tabs">
   <button class="class-tab active" data-class="dried">Dried Cannabis</button>
   <button class="class-tab" data-class="fresh">Fresh Cannabis</button>
@@ -103,34 +272,36 @@ hr{border:none;border-top:0.5px solid var(--color-border-tertiary);margin:1rem 0
   <button class="class-tab" data-class="plant">Cannabis Plants</button>
   <button class="class-tab" data-class="seed">Cannabis Plant Seeds</button>
 </div>
-
-<!-- SUBCATEGORY ROW — format/product type within class -->
-<div class="subcat-row" id="subcat-row">
-  <span class="class-label" id="subcat-label">Format:</span>
-</div>
-
-<!-- Class-specific notice -->
+<div class="subcat-row" id="subcat-row"><span class="subcat-label">Format:</span></div>
 <div class="notice info" id="class-notice"></div>
 
-<div style="margin-top:10px;" class="g3">
-  <div class="fi"><label>Product name</label><input type="text" id="pname" placeholder="e.g. Killer Kush 7G Flower" /></div>
-  <div class="fi"><label>OCS subcategory <span id="ocsmu" style="font-size:10px;color:var(--color-text-tertiary);"></span></label><select id="subcat-sel"></select></div>
-  <div class="fi"><label>Home province</label><select id="home-prov"></select></div>
+<div style="margin-top:14px;" class="g3">
+  <div class="fi"><label>Product name</label><input type="text" id="pname" placeholder="e.g. Killer Kush 7G Flower"/></div>
+  <div class="fi">
+    <label>OCS subcategory <span id="ocsmu" style="font-size:10px;color:#a3a3a3;font-weight:400;"></span></label>
+    <select id="subcat-sel"></select>
+  </div>
+  <div class="fi">
+    <label>Province selling into</label>
+    <select id="home-prov"></select>
+  </div>
 </div>
 
+<!-- EXCISE -->
 <div class="sl" id="excise-sl">Excise duty inputs</div>
 <div id="excise-inputs"></div>
 <div class="card">
-  <div class="ctitle">Excise duty — CRA EDM6-3</div>
+  <div class="ctitle">Excise duty — CRA EDM6-3 (Mar 2025)</div>
   <div id="excise-rows"></div>
 </div>
-<!-- THC limit compliance check -->
 <div class="notice" id="thc-limit-notice"></div>
 
+<!-- COGS -->
 <div class="sl" id="cogs-sl">COGS</div>
 <div id="cogs-inputs"></div>
 
-<div class="sl">Other per-unit costs</div>
+<!-- OVERHEAD -->
+<div class="sl">Per-unit overhead & fees</div>
 <div class="g3">
   <div class="fi"><label>Go-to-market ($)</label><input type="number" id="gtm" step="0.01" value="0.25"/></div>
   <div class="fi"><label>Freight ($)</label><input type="number" id="freight" step="0.01" value="0.35"/></div>
@@ -138,669 +309,717 @@ hr{border:none;border-top:0.5px solid var(--color-border-tertiary);margin:1rem 0
 </div>
 <div class="g2">
   <div class="fi">
-    <label>Prov. additional duty % <span id="prov-duty-src" style="font-size:10px;color:var(--color-text-tertiary);"></span></label>
+    <label>Prov. additional duty % <span id="prov-duty-src" style="font-size:10px;color:#a3a3a3;font-weight:400;"></span></label>
     <input type="number" id="prov-duty-pct" step="0.01" value="3.9"/>
-    <div class="hint">ON 3.9% · AB 16.8% · SK 6.45% · NU 19.3% · others 0%</div>
+    <div class="hint">ON 3.9% · AB 16.8% · SK 6.45% · NU 19.3% · others 0% — auto-sets with province</div>
   </div>
   <div class="fi"><label>Target gross margin %</label><input type="number" id="tgt-margin" step="1" value="35"/></div>
 </div>
 
 <hr/>
-<div class="sl">Producer information (annual regulatory fee — Health Canada)</div>
-<div class="g3">
-  <div class="fi">
-    <label>Licence class</label>
-    <select id="licence-class">
-      <option value="standard">Standard (cultivation / processing / sale)</option>
-      <option value="micro">Micro (cultivation / processing / nursery)</option>
-    </select>
+
+<!-- PRODUCER INFO -->
+<div class="sl">Producer — annual regulatory fee (Health Canada)</div>
+<div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:8px;">
+  <div class="ltoggle">
+    <button class="lbtn active" data-class="standard">Standard licence</button>
+    <button class="lbtn" data-class="micro">Micro licence</button>
   </div>
-  <div class="fi">
-    <label>Prior-year cannabis revenue ($)</label>
-    <input type="number" id="annual-revenue" step="1000" value="3000000"/>
-    <div class="hint">Net sales minus cannabis purchases — excl. excise, GST/HST, freight, processing fees</div>
+  <div class="reg-chip">
+    <span class="rc-label">Annual reg. fee rate</span>
+    <span class="rc-pct" id="reg-fee-pct-display">2.3%</span>
+    <span class="rc-note" id="reg-fee-note">of net rev · min $23,000/yr</span>
   </div>
-  <div class="fi">
-    <label>This SKU — annual units sold</label>
-    <input type="number" id="sku-units" step="100" value="5000"/>
-    <div class="hint">Used to allocate annual fee to a per-unit cost</div>
-  </div>
-</div>
-<div class="card">
-  <div class="ctitle">Annual regulatory fee (Health Canada) — per-unit allocation</div>
-  <div id="reg-fee-rows"></div>
 </div>
 
 <hr/>
+
+<!-- PRICING CHAIN -->
 <div class="sl">Pricing chain — <span id="chain-label">Ontario (OCS)</span></div>
 <div class="chain">
   <div class="cb"><div class="cl">Landed cost</div><div class="cv" id="fc-landed">—</div><div class="cs">COGS + excise</div></div>
   <div class="arr">→</div>
   <div class="cb"><div class="cl">Board wholesale</div><div class="cv" id="fc-ws">—</div><div class="cs" id="fc-ws-sub">—</div></div>
   <div class="arr">→</div>
-  <div class="cb"><div class="cl">eComm / retail</div><div class="cv" id="fc-ec">—</div><div class="cs" id="fc-ec-sub">—</div></div>
+  <div class="cb"><div class="cl">eComm pre-tax</div><div class="cv" id="fc-ec">—</div><div class="cs" id="fc-ec-sub">—</div></div>
   <div class="arr">→</div>
-  <div class="cb acc"><div class="cl">MSRP (all-in)</div><div class="cv" id="fc-msrp">—</div><div class="cs" id="fc-hst-sub">—</div></div>
+  <div class="cb acc"><div class="cl">MSRP (incl. HST)</div><div class="cv" id="fc-msrp">—</div><div class="cs" id="fc-hst-sub">—</div></div>
 </div>
 <div id="pf-alert" class="pf-alert"></div>
-<div style="display:flex;align-items:center;gap:8px;margin-top:8px;">
+
+<div style="display:flex;align-items:center;gap:10px;margin-top:10px;">
   <div class="mbar" style="flex:1;"><div class="mfill" id="mbar" style="width:0%"></div></div>
-  <div style="font-size:13px;font-weight:500;color:var(--color-text-primary);min-width:42px;text-align:right;" id="mpct">—</div>
+  <div style="font-size:14px;font-weight:700;color:#171717;min-width:46px;text-align:right;" id="mpct">—</div>
   <div id="mbadge"></div>
 </div>
-<div style="font-size:10px;color:var(--color-text-tertiary);margin-top:2px;" id="mvt">—</div>
+<div style="font-size:11px;color:#a3a3a3;margin-top:3px;" id="mvt">—</div>
 
+<!-- GOAL MSRP -->
+<div class="goal-block">
+  <div class="gtitle">Goal MSRP <span class="gbadge">incl. HST</span></div>
+  <div class="g3">
+    <div class="fi">
+      <label>Target shelf price (incl. tax)</label>
+      <input type="number" class="goal-input" id="goal-msrp" step="0.05" placeholder="e.g. 59.95"/>
+      <div class="hint">Back-solves the maximum landed cost you can submit to the board and still hit this shelf price</div>
+    </div>
+    <div class="fi">
+      <label>Required landed cost to hit goal</label>
+      <input type="number" id="goal-landed" readonly placeholder="—"/>
+      <div class="hint">Max landed cost at this MSRP via the selected province's pricing chain</div>
+    </div>
+    <div class="fi">
+      <label>Margin at goal MSRP</label>
+      <input type="number" id="goal-margin-display" readonly placeholder="—"/>
+      <div class="hint">Gross margin % if you achieve the goal MSRP with your current COGS</div>
+    </div>
+  </div>
+  <div class="goal-result" id="goal-result">
+    <div style="font-size:11px;color:#a3a3a3;">Enter a goal MSRP above to back-solve your required landed cost and margin</div>
+  </div>
+</div>
+
+<!-- COGS BREAKDOWN -->
 <div class="sl">Full cost breakdown — per unit</div>
 <div id="cogs-bd"></div>
-<div style="display:flex;gap:6px;margin-top:6px;flex-wrap:wrap;">
-  <div class="cb" style="flex:1;min-width:78px;"><div class="cl">Excise</div><div class="cv" id="bd-excise">—</div><div class="cs" id="bd-excise-m">—</div></div>
-  <div class="cb" style="flex:1;min-width:78px;"><div class="cl">Reg. fee alloc.</div><div class="cv" id="bd-regfee">—</div><div class="cs">per unit</div></div>
-  <div class="cb" style="flex:1;min-width:78px;"><div class="cl">Net revenue</div><div class="cv" id="bd-net">—</div><div class="cs">Landed − excise</div></div>
-  <div class="cb" style="flex:1;min-width:78px;"><div class="cl">Total COGS</div><div class="cv" id="bd-cogs">—</div><div class="cs">all-in per unit</div></div>
-  <div class="cb" style="flex:1;min-width:78px;" id="bd-mgbox"><div class="cl">Gross margin</div><div class="cv" id="bd-mgval">—</div><div class="cs" id="bd-mgsub">—</div></div>
+<div class="metric-row">
+  <div class="cb"><div class="cl">Excise</div><div class="cv" id="bd-excise">—</div><div class="cs" id="bd-excise-m">—</div></div>
+  <div class="cb"><div class="cl">Reg. fee</div><div class="cv" id="bd-regfee">—</div><div class="cs" id="bd-regfee-s">—</div></div>
+  <div class="cb"><div class="cl">Net revenue</div><div class="cv" id="bd-net">—</div><div class="cs">Landed − excise</div></div>
+  <div class="cb"><div class="cl">Total COGS</div><div class="cv" id="bd-cogs">—</div><div class="cs">all-in per unit</div></div>
+  <div class="cb" id="bd-mgbox"><div class="cl">Gross margin</div><div class="cv" id="bd-mgval">—</div><div class="cs" id="bd-mgsub">—</div></div>
 </div>
 
 <hr/>
-<div class="sl">National MSRP — all provinces</div>
-<table class="pft">
-  <thead><tr><th>Province / board</th><th>Model</th><th>Board markup</th><th>Tax</th><th>Add'l duty</th><th class="nr">Excise</th><th class="nr">Wholesale</th><th class="nr">MSRP</th></tr></thead>
-  <tbody id="prov-tbody"></tbody>
-</table>
-<div style="font-size:10px;color:var(--color-text-tertiary);margin-top:4px;">Private model provinces (AB, SK, MB): MSRP shown is a floor estimate — retailers add their own margin.</div>
+
+<!-- PROVINCE TABLE -->
+<div class="sl">National MSRP (incl. all taxes) — all provinces</div>
+<div class="tbl-wrap">
+  <table class="pft">
+    <thead><tr>
+      <th>Province / board</th><th>Model</th><th>Board markup</th><th>eComm</th>
+      <th>Tax</th><th>Add'l duty</th><th class="nr">Excise</th><th class="nr">Wholesale</th><th class="nr">MSRP incl. tax</th>
+    </tr></thead>
+    <tbody id="prov-tbody"></tbody>
+  </table>
+</div>
+<div style="font-size:11px;color:#a3a3a3;margin-top:6px;">MSRP inclusive of all applicable sales taxes. Private model provinces (AB, SK, MB): floor estimate — retailers add their own margin.</div>
 
 <hr/>
+
+<!-- COMPETITIVE SET -->
 <div class="sl">Competitive set</div>
-<div class="card" style="margin-bottom:10px;">
+<div class="card" style="margin-bottom:12px;">
   <div class="ctitle">Auto-parse from copied text ↗</div>
-  <div style="font-size:11px;color:var(--color-text-secondary);margin-bottom:8px;">Paste copied text from OCS.ca, BC Cannabis Store, Alberta Cannabis, SQDC, or any retailer. Claude extracts brand, SKU, and price automatically. Cmd/Ctrl+Enter to run.</div>
-  <textarea class="parse-area" id="parse-input" placeholder="Paste product listings here…"></textarea>
-  <div style="display:flex;align-items:center;gap:8px;margin-top:8px;">
+  <div style="font-size:12px;color:#525252;margin-bottom:10px;line-height:1.5;">
+    Paste product listings from OCS.ca, BC Cannabis, Alberta Cannabis, SQDC, or any retailer.
+    Claude will extract brand, SKU, and price. Cmd/Ctrl+Enter to run.
+    <strong>Requires Anthropic API access.</strong>
+  </div>
+  <textarea class="parse-area" id="parse-input" placeholder="Paste product listings here…&#10;&#10;Example:&#10;Pistol &amp; Paris — Pink Goo 7g — $79.95&#10;Broken Coast Holy Grail Kush 7g $67.80&#10;Simply Bare Blue Dream 7g - $75.99"></textarea>
+  <div style="display:flex;align-items:center;gap:10px;margin-top:10px;">
     <button class="btn-parse" id="parse-btn">Extract products ↗</button>
     <div class="parse-status" id="parse-status"></div>
   </div>
 </div>
-<div class="g4" style="margin-bottom:8px;">
-  <div class="fi"><label>Brand</label><input type="text" id="cb-in" placeholder="Brand"/></div>
-  <div class="fi"><label>SKU</label><input type="text" id="cs-in" placeholder="SKU name"/></div>
-  <div class="fi"><label>MSRP ($)</label><input type="number" id="cp-in" step="0.01" placeholder="0.00"/></div>
+
+<div class="g4" style="margin-bottom:10px;">
+  <div class="fi"><label>Brand</label><input type="text" id="cb-in" placeholder="Brand name"/></div>
+  <div class="fi"><label>SKU / product</label><input type="text" id="cs-in" placeholder="SKU name"/></div>
+  <div class="fi"><label>MSRP incl. tax ($)</label><input type="number" id="cp-in" step="0.01" placeholder="0.00"/></div>
   <div class="fi"><label>&nbsp;</label><button class="btn-s" id="add-comp">+ Add manually</button></div>
 </div>
 <table class="comp-table">
-  <thead><tr><th>Brand</th><th>SKU</th><th class="nr">MSRP</th><th class="nr">vs. your MSRP</th><th class="nr">$/g</th><th></th></tr></thead>
+  <thead><tr><th>Brand</th><th>SKU</th><th class="nr">MSRP (incl. tax)</th><th class="nr">vs. your MSRP</th><th class="nr">$/g</th><th></th></tr></thead>
   <tbody id="comp-tbody"></tbody>
 </table>
-<div style="font-size:11px;color:var(--color-text-tertiary);margin-top:4px;" id="comp-sum"></div>
+<div style="font-size:12px;color:#a3a3a3;margin-top:6px;" id="comp-sum"></div>
+
 <div class="action-row">
   <button class="btn-s" id="reset-btn">Reset</button>
-  <button class="btn-p" id="export-btn">Export summary ↗</button>
+  <button class="btn-p" id="export-btn">Print / Save PDF</button>
 </div>
+
+</div><!-- /wrap -->
+
+<div class="hc-footer">
+  <strong>OCS markup rates</strong> (official OCS markup-rates table):
+  Dried Flower +23% · Pre-rolls +29% · Infused Pre-rolls +29% · Oils +25% · Capsules +25% · Vapes +25% · Concentrates +25% · Edibles +25% · Beverages +25% · Topicals +25% · Seeds +25% · Accessories +20%.
+  OCS.ca eCommerce: +39% above wholesale → HST (13%) → rounded up to nearest $0.05. Source: OCS Pricing Guide, Oct 2025.
+  <br/><strong>Excise duty:</strong> CRA EDM6-3 (Mar 2025) — dried/fresh cannabis = higher of $1.00/g flowering material or 10% ad valorem;
+  cannabis extracts / edible cannabis / cannabis topicals = $0.01/mg THC flat-rate, no ad valorem.
+  <br/><strong>Annual regulatory fee:</strong> Health Canada (Apr 2025) — Standard licence: 2.3% of net cannabis revenue (min $23,000/yr);
+  Micro licence: 1% on revenue ≤$1M, 2.3% above (min $2,500/yr). Applied as % of per-unit net revenue in COGS.
+  <br/><strong>Provincial distribution models &amp; markups:</strong> StratCann provincial overview · BCLDB Wholesale Pricing Guide (Jan 2026) · AGLC Markup Bulletin.
+  <br/><strong>Health Canada product classifications:</strong> Schedule 4, Cannabis Act &amp; Cannabis Regulations.
+  Beverages = edible cannabis. Infused pre-rolls &amp; sublingual oils = cannabis extracts. Capsules = cannabis extracts.
+  <br/>MSRP shown inclusive of HST / GST / PST for all provinces. Private model provinces (AB, SK, MB) show a floor estimate — final retail price is set by the retailer.
+  <br/>This calculator is for estimation purposes only. Verify all figures with your accountant and regulatory counsel before submitting to any provincial board.
 </div>
 
 <script>
-// ── HEALTH CANADA PRODUCT TAXONOMY ──────────────────────────────────────────
-// 7 legal classes per Schedule 4, Cannabis Act
-// Each class has subcategories (product formats), excise type, OCS subcat, THC limits, and COGS
-
-const CLASSES = {
-  dried: {
-    label: 'Dried Cannabis',
-    exciseType: 'flower',
-    notice: 'Dried cannabis includes flower, trim, shake, and kief in their dried form. Pre-rolls using only dried flower are also classified as dried cannabis. THC/THCA cannot be added.',
-    noticeType: 'info',
-    thcLimitContainer: null, // no container limit for dried cannabis
-    thcLimitUnit: null,
-    subcats: [
-      { id: 'flower_bulk', label: 'Flower — bulk (3.5g / 7g / 14g / 28g)', ocsSubcat: 'Dried flower', ocsMarkup: 0.09,
-        cogs: [{id:'biomass',label:'Biomass ($/g)',def:1.65},{id:'pkg',label:'Packaging ($)',def:0.95},{id:'lp',label:'Labour portioning ($)',def:3.50},{id:'lk',label:'Labour packaging ($)',def:1.55},{id:'labels',label:'Labels ($)',def:0.10},{id:'integra',label:'Integra/humidity ($)',def:0.15}],
-        exciseDef: {gFlower:7, gNonFlower:0, dutiable:10} },
-      { id: 'preroll', label: 'Pre-roll — dried flower only', ocsSubcat: 'Pre-rolls', ocsMarkup: 0.09,
-        cogs: [{id:'flower',label:'Flower ($)',def:0.64},{id:'cone',label:'Cone/tube ($)',def:0.35},{id:'outer',label:'Outer pkg ($)',def:0.35},{id:'labels',label:'Labels ($)',def:0.075},{id:'lp',label:'Labour portioning ($)',def:2.00},{id:'lk',label:'Labour packaging ($)',def:0.54}],
-        exciseDef: {gFlower:1, gNonFlower:0, dutiable:5} },
-      { id: 'milled', label: 'Milled / ground cannabis', ocsSubcat: 'Dried flower', ocsMarkup: 0.09,
-        cogs: [{id:'biomass',label:'Biomass ($/g)',def:1.20},{id:'pkg',label:'Packaging ($)',def:0.70},{id:'labour',label:'Milling labour ($)',def:1.00},{id:'labels',label:'Labels ($)',def:0.10}],
-        exciseDef: {gFlower:3.5, gNonFlower:0, dutiable:8} },
-    ]
-  },
-  fresh: {
-    label: 'Fresh Cannabis',
-    exciseType: 'flower',
-    notice: 'Fresh cannabis is cannabis that has not been dried. Excise is calculated the same as dried cannabis — per gram of flowering material, higher of flat-rate ($1.00/g) or ad valorem (10%).',
-    noticeType: 'info',
-    thcLimitContainer: null,
-    thcLimitUnit: null,
-    subcats: [
-      { id: 'fresh_flower', label: 'Fresh flower', ocsSubcat: 'Dried flower', ocsMarkup: 0.09,
-        cogs: [{id:'biomass',label:'Biomass ($/g)',def:0.80},{id:'pkg',label:'Packaging ($)',def:0.60},{id:'labels',label:'Labels ($)',def:0.10},{id:'labour',label:'Labour ($)',def:1.50}],
-        exciseDef: {gFlower:7, gNonFlower:0, dutiable:6} },
-    ]
-  },
-  extract: {
-    label: 'Cannabis Extracts',
-    exciseType: 'thc',
-    notice: 'Cannabis extracts are taxed at $0.01/mg total THC — no ad valorem. Max 1,000mg THC per container. Includes: vape cartridges/AIOs, concentrates, hash, kief, tinctures/oils (sublingual/ingested), infused pre-rolls, capsules/softgels.',
-    noticeType: 'info',
-    thcLimitContainer: 1000, // 1,000mg THC max per immediate container
-    thcLimitUnit: 10,        // 10mg THC max per discrete unit (ingested/nasal/rectal/vaginal)
-    subcats: [
-      { id: 'vape_aio', label: 'Vape — All-In-One (AIO)', ocsSubcat: 'Vape pens / AIO', ocsMarkup: 0.25,
-        cogs: [{id:'hw',label:'Hardware ($)',def:3.50},{id:'extract',label:'Extract fill ($/g)',def:2.75},{id:'fill',label:'Fill/cap ($)',def:3.00},{id:'inner',label:'Inner pkg ($)',def:0.45},{id:'outer',label:'Outer pkg ($)',def:0.20},{id:'labels',label:'Labels ($)',def:0.20}],
-        exciseDef: {mgTHC:350, gramsRef:0.5}, isInhaled:true },
-      { id: 'vape_510', label: 'Vape — 510 Cartridge', ocsSubcat: 'Vape carts (510)', ocsMarkup: 0.25,
-        cogs: [{id:'hw',label:'Cart hardware ($)',def:2.50},{id:'extract',label:'Extract fill ($/g)',def:2.75},{id:'fill',label:'Fill/cap ($)',def:2.00},{id:'inner',label:'Inner pkg ($)',def:0.35},{id:'outer',label:'Outer pkg ($)',def:0.20},{id:'labels',label:'Labels ($)',def:0.15}],
-        exciseDef: {mgTHC:350, gramsRef:0.5}, isInhaled:true },
-      { id: 'infused_pr', label: 'Infused Pre-roll (extract class)', ocsSubcat: 'Infused pre-rolls', ocsMarkup: 0.20,
-        cogs: [{id:'flower',label:'Flower ($)',def:0.64},{id:'extract',label:'Extract/infusion ($/g)',def:1.10},{id:'cone',label:'Cone/tube ($)',def:0.35},{id:'outer',label:'Outer pkg ($)',def:0.35},{id:'labels',label:'Labels ($)',def:0.075},{id:'lp',label:'Labour portioning ($)',def:2.00},{id:'lk',label:'Labour packaging ($)',def:0.54}],
-        exciseDef: {mgTHC:700, gramsRef:1}, isInhaled:true,
-        notice:'Infused pre-rolls are cannabis extracts under CRA EDM6-3 — excise = total THC mg × $0.01, not per-gram flower rate.' },
-      { id: 'concentrate', label: 'Concentrate (shatter / wax / live resin / rosin)', ocsSubcat: 'Concentrates', ocsMarkup: 0.25,
-        cogs: [{id:'extract',label:'Extract ($/g)',def:7.80},{id:'vessel',label:'Vessel ($)',def:0.50},{id:'pkg',label:'Packaging ($)',def:0.35},{id:'labels',label:'Labels ($)',def:0.10},{id:'labour',label:'Labour ($)',def:1.00}],
-        exciseDef: {mgTHC:850, gramsRef:1} },
-      { id: 'hash', label: 'Hash / kief / bubble hash', ocsSubcat: 'Hash / kief', ocsMarkup: 0.25,
-        cogs: [{id:'extract',label:'Extract ($/g)',def:6.00},{id:'vessel',label:'Vessel/pkg ($)',def:0.60},{id:'labels',label:'Labels ($)',def:0.10},{id:'labour',label:'Labour ($)',def:1.50}],
-        exciseDef: {mgTHC:700, gramsRef:1} },
-      { id: 'oil_tincture', label: 'Oil / tincture (sublingual or ingested)', ocsSubcat: 'Cannabis oils', ocsMarkup: 0.30,
-        cogs: [{id:'extract',label:'Oil ($/mL)',def:7.00},{id:'vessel',label:'Bottle/dropper ($)',def:0.50},{id:'pkg',label:'Outer pkg ($)',def:0.40},{id:'labels',label:'Labels ($)',def:0.10},{id:'labour',label:'Fill/cap labour ($)',def:0.30}],
-        exciseDef: {mgTHC:300, gramsRef:30},
-        notice:'Oils/tinctures intended for sublingual or ingested use are cannabis extracts. Max 10mg THC per dispense activation if container >90mL or >7.5g. Oils intended for topical use only = cannabis topicals.' },
-      { id: 'capsule', label: 'Capsule / softgel (ingested extract)', ocsSubcat: 'Capsules / softgels', ocsMarkup: 0.30,
-        cogs: [{id:'extract',label:'Oil/extract ($/cap)',def:0.80},{id:'cap',label:'Capsule shell ($)',def:0.10},{id:'pkg',label:'Packaging ($)',def:0.40},{id:'labels',label:'Labels ($)',def:0.10},{id:'labour',label:'Fill/cap labour ($)',def:0.25}],
-        exciseDef: {mgTHC:100, gramsRef:10},
-        notice:'Capsules for ingestion are cannabis extracts, not edible cannabis. Max 10mg THC per capsule (discrete unit for ingestion).' },
-    ]
-  },
-  edible: {
-    label: 'Edible Cannabis',
-    exciseType: 'thc',
-    notice: 'Edible cannabis includes all food and beverages infused with cannabis. Max 10mg THC per discrete unit. Max 10mg THC per serving for beverages. No added caffeine (except naturally occurring, max 30mg/container). Max 0.5% ethyl alcohol.',
-    noticeType: 'info',
-    thcLimitContainer: null,
-    thcLimitUnit: 10, // 10mg THC max per discrete unit
-    subcats: [
-      { id: 'solid_edible', label: 'Solid edible (chocolate, gummies, baked goods)', ocsSubcat: 'Edible cannabis — solid', ocsMarkup: 0.30,
-        cogs: [{id:'base',label:'Base ingredient ($)',def:1.20},{id:'distillate',label:'THC distillate ($)',def:0.80},{id:'pkg',label:'Packaging ($)',def:0.60},{id:'labels',label:'Labels ($)',def:0.10},{id:'labour',label:'Labour/production ($)',def:2.00}],
-        exciseDef: {mgTHC:100, gramsRef:0} },
-      { id: 'nonsolid_edible', label: 'Non-solid edible (honey, sauce, powder)', ocsSubcat: 'Edible cannabis — non-solid', ocsMarkup: 0.30,
-        cogs: [{id:'base',label:'Base ingredient ($)',def:1.00},{id:'distillate',label:'THC distillate ($)',def:0.80},{id:'pkg',label:'Packaging ($)',def:0.50},{id:'labels',label:'Labels ($)',def:0.10},{id:'labour',label:'Labour ($)',def:1.50}],
-        exciseDef: {mgTHC:100, gramsRef:0} },
-      { id: 'beverage', label: 'Cannabis beverage (drink, sparkling, tea)', ocsSubcat: 'Cannabis beverages', ocsMarkup: 0.30,
-        cogs: [{id:'base',label:'Beverage base ($)',def:0.80},{id:'infusion',label:'THC infusion ($)',def:0.50},{id:'can',label:'Can/bottle ($)',def:0.25},{id:'pkg',label:'Multi-pack pkg ($)',def:0.30},{id:'labels',label:'Labels ($)',def:0.10},{id:'labour',label:'Fill/seal labour ($)',def:0.40}],
-        exciseDef: {mgTHC:10, gramsRef:0.355},
-        notice:'Cannabis beverages are edible cannabis, not a separate class. Max 10mg THC per serving. No added caffeine except naturally occurring (e.g. tea). Max 0.5% ethyl alcohol.' },
-    ]
-  },
-  topical: {
-    label: 'Cannabis Topicals',
-    exciseType: 'thc',
-    notice: 'Cannabis topicals are applied to external body surfaces (skin, hair, nails). Max 1,000mg THC per container. Cannot be represented for use near the eye or on damaged skin. Denatured ethyl alcohol permitted with no concentration limit.',
-    noticeType: 'info',
-    thcLimitContainer: 1000,
-    thcLimitUnit: null,
-    subcats: [
-      { id: 'cream_lotion', label: 'Cream / lotion / balm', ocsSubcat: 'Cannabis topicals', ocsMarkup: 0.40,
-        cogs: [{id:'base',label:'Cream/lotion base ($)',def:3.00},{id:'extract',label:'CBD/THC extract ($)',def:1.00},{id:'container',label:'Container ($)',def:0.80},{id:'pkg',label:'Outer pkg ($)',def:0.40},{id:'labels',label:'Labels ($)',def:0.15},{id:'labour',label:'Blend/fill labour ($)',def:1.00}],
-        exciseDef: {mgTHC:50, gramsRef:30} },
-      { id: 'transdermal', label: 'Transdermal patch / gel', ocsSubcat: 'Cannabis topicals', ocsMarkup: 0.40,
-        cogs: [{id:'base',label:'Patch/gel base ($)',def:4.00},{id:'extract',label:'CBD/THC extract ($)',def:1.50},{id:'pkg',label:'Packaging ($)',def:0.60},{id:'labels',label:'Labels ($)',def:0.15},{id:'labour',label:'Production labour ($)',def:2.00}],
-        exciseDef: {mgTHC:20, gramsRef:0} },
-      { id: 'spray_topical', label: 'Topical spray', ocsSubcat: 'Cannabis topicals', ocsMarkup: 0.40,
-        cogs: [{id:'base',label:'Spray base ($)',def:2.50},{id:'extract',label:'CBD/THC extract ($)',def:0.80},{id:'bottle',label:'Spray bottle ($)',def:1.00},{id:'labels',label:'Labels ($)',def:0.15},{id:'labour',label:'Labour ($)',def:0.80}],
-        exciseDef: {mgTHC:50, gramsRef:30} },
-    ]
-  },
-  plant: {
-    label: 'Cannabis Plants',
-    exciseType: 'plant',
-    notice: 'Cannabis plants (vegetative) for sale to consumers. Excise: $0.25/plant (fed) + $0.75/plant (prov) = $1.00 per plant, or 10% ad valorem, whichever is higher.',
-    noticeType: 'info',
-    thcLimitContainer: null,
-    thcLimitUnit: null,
-    subcats: [
-      { id: 'plant', label: 'Vegetative cannabis plant', ocsSubcat: 'Dried flower', ocsMarkup: 0.09,
-        cogs: [{id:'clone',label:'Clone/seedling cost ($)',def:5.00},{id:'pot',label:'Pot/medium ($)',def:1.50},{id:'pkg',label:'Packaging ($)',def:0.50},{id:'labels',label:'Labels ($)',def:0.20},{id:'labour',label:'Labour ($)',def:2.00}],
-        exciseDef: {units:1, dutiable:15} },
-    ]
-  },
-  seed: {
-    label: 'Cannabis Plant Seeds',
-    exciseType: 'seed',
-    notice: 'Cannabis plant seeds for sale to consumers. Excise: $0.25/viable seed (fed) + $0.75/viable seed (prov) = $1.00 per seed, or 10% ad valorem, whichever is higher.',
-    noticeType: 'info',
-    thcLimitContainer: null,
-    thcLimitUnit: null,
-    subcats: [
-      { id: 'seed', label: 'Cannabis seed pack', ocsSubcat: 'Dried flower', ocsMarkup: 0.09,
-        cogs: [{id:'seeds',label:'Seeds cost ($)',def:3.00},{id:'pkg',label:'Packaging ($)',def:0.50},{id:'labels',label:'Labels ($)',def:0.15},{id:'labour',label:'Labour ($)',def:0.50}],
-        exciseDef: {units:5, dutiable:20} },
-    ]
-  },
+// ── OCS MARKUP RATES — from official OCS markup-rates.png table ────────────
+const OCS_MARKUPS = {
+  'Dried flower':                0.23,
+  'Pre-rolls':                   0.29,
+  'Infused pre-rolls':           0.29,
+  'Vape pens / AIO':             0.25,
+  'Vape carts (510)':            0.25,
+  'Concentrates':                0.25,
+  'Hash / kief':                 0.25,
+  'Tinctures':                   0.25,
+  'Cannabis oils':               0.25,
+  'Capsules / softgels':         0.25,
+  'Edible cannabis — solid':     0.25,
+  'Edible cannabis — non-solid': 0.25,
+  'Cannabis beverages':          0.25,
+  'Cannabis topicals':           0.25,
+  'Cannabis seeds':              0.25,
 };
+const OCS_ECOMM = 0.39;
 
-const OCS_SUBCATS_MAP = {
-  'Dried flower':0.09,'Pre-rolls':0.09,'Infused pre-rolls':0.20,
-  'Vape pens / AIO':0.25,'Vape carts (510)':0.25,
-  'Concentrates':0.25,'Hash / kief':0.25,'Tinctures':0.25,
-  'Cannabis oils':0.30,'Capsules / softgels':0.30,
-  'Edible cannabis — solid':0.30,'Edible cannabis — non-solid':0.30,'Cannabis beverages':0.30,
-  'Cannabis topicals':0.40,
-};
-
+// ── OCS PRICE FLOORS ────────────────────────────────────────────────────────
 const PRICE_FLOORS = {
-  flower_bulk:{ws_per_g:5.82,cost_per_g:5.34},
-  preroll:{ws_per_g:5.82,cost_per_g:5.34},
-  milled:{ws_per_g:5.82,cost_per_g:5.34},
-  infused_pr:{ws_per_g:12.48,cost_per_g:10.40},
-  vape_aio:{ws_per_g:22.46,cost_per_g:17.97,flat_above_1g:29.95},
-  vape_510:{ws_per_g:22.46,cost_per_g:17.97,flat_above_1g:29.95},
+  flower_bulk: {ws_per_g:5.82}, preroll:{ws_per_g:5.82}, milled:{ws_per_g:5.82},
+  infused_pr:  {ws_per_g:12.48},
+  vape_aio:    {ws_per_g:22.46, flat_above_1g:29.95},
+  vape_510:    {ws_per_g:22.46, flat_above_1g:29.95},
 };
 
-const PROVINCES=[
-  {code:'ON',name:'Ontario',board:'OCS',model:'Gov wholesale',wsMarkupFromOCS:true,wsMarkup:null,ecommMarkup:0.39,hst:0.13,addlDutyPct:0.039,directToRetail:false,roundUp5:true},
-  {code:'BC',name:'British Columbia',board:'BCLDB',model:'Hybrid',wsMarkup:0.15,ecommMarkup:0.30,hst:0.12,addlDutyPct:0,directToRetail:false,roundUp5:false},
-  {code:'AB',name:'Alberta',board:'AGLC',model:'Private retail',wsMarkup:0.06,ecommMarkup:0,hst:0.05,addlDutyPct:0.168,directToRetail:false,roundUp5:false},
-  {code:'QC',name:'Quebec',board:'SQDC',model:'Gov monopoly',wsMarkup:0.35,ecommMarkup:0,hst:0.15,addlDutyPct:0,directToRetail:false,roundUp5:false},
-  {code:'SK',name:'Saskatchewan',board:'SLGA',model:'Private retail',wsMarkup:0,ecommMarkup:0,hst:0.11,addlDutyPct:0.0645,directToRetail:true,roundUp5:false},
-  {code:'MB',name:'Manitoba',board:'Direct',model:'Private retail',wsMarkup:0,ecommMarkup:0,hst:0.12,addlDutyPct:0,directToRetail:true,roundUp5:false},
-  {code:'NB',name:'New Brunswick',board:'Cannabis NB',model:'Hybrid',wsMarkup:0.25,ecommMarkup:0,hst:0.15,addlDutyPct:0,directToRetail:false,roundUp5:false},
-  {code:'NS',name:'Nova Scotia',board:'NSLC',model:'Gov monopoly',wsMarkup:0.28,ecommMarkup:0,hst:0.15,addlDutyPct:0,directToRetail:false,roundUp5:false},
-  {code:'PEI',name:'PEI',board:'PEILCC',model:'Gov monopoly',wsMarkup:0.28,ecommMarkup:0,hst:0.15,addlDutyPct:0,directToRetail:false,roundUp5:false},
-  {code:'NL',name:'Newfoundland',board:'NLC',model:'Gov monopoly',wsMarkup:0.28,ecommMarkup:0,hst:0.15,addlDutyPct:0,directToRetail:false,roundUp5:false},
-  {code:'YT',name:'Yukon',board:'YLC',model:'Gov monopoly',wsMarkup:0.20,ecommMarkup:0,hst:0.05,addlDutyPct:0,directToRetail:false,roundUp5:false},
-  {code:'NT',name:'N.W. Territories',board:'GNWT',model:'Gov monopoly',wsMarkup:0.20,ecommMarkup:0,hst:0.05,addlDutyPct:0,directToRetail:false,roundUp5:false},
-  {code:'NU',name:'Nunavut',board:'NLC',model:'Gov monopoly',wsMarkup:0.25,ecommMarkup:0,hst:0.05,addlDutyPct:0.193,directToRetail:false,roundUp5:false},
+const REG_FEE_RATES = { standard:0.023, micro:0.01 };
+let licenceClass = 'standard';
+
+// ── PROVINCES ────────────────────────────────────────────────────────────────
+const PROVINCES = [
+  {code:'ON', name:'Ontario',          board:'OCS',         model:'Gov wholesale', wsMarkupFromOCS:true,  wsMarkup:null, ecommMarkup:OCS_ECOMM, hst:0.13, addlDutyPct:0.039,  directToRetail:false, roundUp5:true },
+  {code:'BC', name:'British Columbia', board:'BCLDB',        model:'Hybrid',        wsMarkupFromOCS:false, wsMarkup:0.15, ecommMarkup:0.30,      hst:0.12, addlDutyPct:0,       directToRetail:false, roundUp5:false},
+  {code:'AB', name:'Alberta',          board:'AGLC',         model:'Private retail',wsMarkupFromOCS:false, wsMarkup:0.06, ecommMarkup:0,         hst:0.05, addlDutyPct:0.168,   directToRetail:false, roundUp5:false},
+  {code:'QC', name:'Quebec',           board:'SQDC',         model:'Gov monopoly',  wsMarkupFromOCS:false, wsMarkup:0.35, ecommMarkup:0,         hst:0.15, addlDutyPct:0,       directToRetail:false, roundUp5:false},
+  {code:'SK', name:'Saskatchewan',     board:'SLGA',         model:'Private retail',wsMarkupFromOCS:false, wsMarkup:0,    ecommMarkup:0,         hst:0.11, addlDutyPct:0.0645,  directToRetail:true,  roundUp5:false},
+  {code:'MB', name:'Manitoba',         board:'Direct',       model:'Private retail',wsMarkupFromOCS:false, wsMarkup:0,    ecommMarkup:0,         hst:0.12, addlDutyPct:0,       directToRetail:true,  roundUp5:false},
+  {code:'NB', name:'New Brunswick',    board:'Cannabis NB',  model:'Hybrid',        wsMarkupFromOCS:false, wsMarkup:0.25, ecommMarkup:0,         hst:0.15, addlDutyPct:0,       directToRetail:false, roundUp5:false},
+  {code:'NS', name:'Nova Scotia',      board:'NSLC',         model:'Gov monopoly',  wsMarkupFromOCS:false, wsMarkup:0.28, ecommMarkup:0,         hst:0.15, addlDutyPct:0,       directToRetail:false, roundUp5:false},
+  {code:'PEI',name:'PEI',              board:'PEILCC',       model:'Gov monopoly',  wsMarkupFromOCS:false, wsMarkup:0.28, ecommMarkup:0,         hst:0.15, addlDutyPct:0,       directToRetail:false, roundUp5:false},
+  {code:'NL', name:'Newfoundland',     board:'NLC',          model:'Gov monopoly',  wsMarkupFromOCS:false, wsMarkup:0.28, ecommMarkup:0,         hst:0.15, addlDutyPct:0,       directToRetail:false, roundUp5:false},
+  {code:'YT', name:'Yukon',            board:'YLC',          model:'Gov monopoly',  wsMarkupFromOCS:false, wsMarkup:0.20, ecommMarkup:0,         hst:0.05, addlDutyPct:0,       directToRetail:false, roundUp5:false},
+  {code:'NT', name:'N.W. Territories', board:'GNWT',         model:'Gov monopoly',  wsMarkupFromOCS:false, wsMarkup:0.20, ecommMarkup:0,         hst:0.05, addlDutyPct:0,       directToRetail:false, roundUp5:false},
+  {code:'NU', name:'Nunavut',          board:'NLC',          model:'Gov monopoly',  wsMarkupFromOCS:false, wsMarkup:0.25, ecommMarkup:0,         hst:0.05, addlDutyPct:0.193,   directToRetail:false, roundUp5:false},
 ];
 
-let currentClass = 'dried';
-let currentSubcatIdx = 0;
-let competitors = [{brand:'Pistol & Paris',sku:'Pink Goo 7G',price:79.95,grams:7},{brand:'Broken Coast',sku:'Holy Grail Kush 7G',price:67.80,grams:7}];
+// ── HEALTH CANADA PRODUCT TAXONOMY — Schedule 4, Cannabis Act ─────────────
+const CLASSES = {
+  dried:{label:'Dried Cannabis',exciseType:'flower',
+    notice:'Dried cannabis includes flower, trim, milled, and pre-rolls (flower only). THC/THCA cannot be added. Excise = higher of $1.00/g flowering material or 10% ad valorem.',
+    noticeType:'info',thcLimitContainer:null,thcLimitUnit:null,subcats:[
+    {id:'flower_bulk',label:'Flower — bulk',ocsSubcat:'Dried flower',
+      cogs:[{id:'biomass',label:'Biomass ($/g)',def:1.65},{id:'pkg',label:'Packaging ($)',def:0.95},{id:'lp',label:'Labour portioning ($)',def:3.50},{id:'lk',label:'Labour packaging ($)',def:1.55},{id:'labels',label:'Labels ($)',def:0.10},{id:'integra',label:'Integra/humidity ($)',def:0.15}],
+      exciseDef:{gFlower:7,gNonFlower:0,dutiable:10}},
+    {id:'preroll',label:'Pre-roll — dried flower only',ocsSubcat:'Pre-rolls',
+      cogs:[{id:'flower',label:'Flower ($)',def:0.64},{id:'cone',label:'Cone/tube ($)',def:0.35},{id:'outer',label:'Outer pkg ($)',def:0.35},{id:'labels',label:'Labels ($)',def:0.075},{id:'lp',label:'Labour portioning ($)',def:2.00},{id:'lk',label:'Labour packaging ($)',def:0.54}],
+      exciseDef:{gFlower:1,gNonFlower:0,dutiable:5}},
+    {id:'milled',label:'Milled / ground cannabis',ocsSubcat:'Dried flower',
+      cogs:[{id:'biomass',label:'Biomass ($/g)',def:1.20},{id:'pkg',label:'Packaging ($)',def:0.70},{id:'labour',label:'Milling labour ($)',def:1.00},{id:'labels',label:'Labels ($)',def:0.10}],
+      exciseDef:{gFlower:3.5,gNonFlower:0,dutiable:8}},
+  ]},
+  fresh:{label:'Fresh Cannabis',exciseType:'flower',
+    notice:'Fresh cannabis (not dried). Excise = higher of $1.00/g flowering material or 10% ad valorem.',
+    noticeType:'info',thcLimitContainer:null,thcLimitUnit:null,subcats:[
+    {id:'fresh_flower',label:'Fresh flower',ocsSubcat:'Dried flower',
+      cogs:[{id:'biomass',label:'Biomass ($/g)',def:0.80},{id:'pkg',label:'Packaging ($)',def:0.60},{id:'labels',label:'Labels ($)',def:0.10},{id:'labour',label:'Labour ($)',def:1.50}],
+      exciseDef:{gFlower:7,gNonFlower:0,dutiable:6}},
+  ]},
+  extract:{label:'Cannabis Extracts',exciseType:'thc',
+    notice:'Excise = $0.01/mg THC flat rate (no ad valorem). Max 1,000mg THC per container. Includes: vapes, concentrates, hash, infused pre-rolls, sublingual oils, capsules/softgels.',
+    noticeType:'info',thcLimitContainer:1000,thcLimitUnit:10,subcats:[
+    {id:'vape_aio',label:'Vape — All-In-One (AIO)',ocsSubcat:'Vape pens / AIO',
+      cogs:[{id:'hw',label:'Hardware ($)',def:3.50},{id:'extract',label:'Extract fill ($/g)',def:2.75},{id:'fill',label:'Fill/cap ($)',def:3.00},{id:'inner',label:'Inner pkg ($)',def:0.45},{id:'outer',label:'Outer pkg ($)',def:0.20},{id:'labels',label:'Labels ($)',def:0.20}],
+      exciseDef:{mgTHC:350,gramsRef:0.5}},
+    {id:'vape_510',label:'Vape — 510 Cartridge',ocsSubcat:'Vape carts (510)',
+      cogs:[{id:'hw',label:'Cart hardware ($)',def:2.50},{id:'extract',label:'Extract fill ($/g)',def:2.75},{id:'fill',label:'Fill/cap ($)',def:2.00},{id:'inner',label:'Inner pkg ($)',def:0.35},{id:'outer',label:'Outer pkg ($)',def:0.20},{id:'labels',label:'Labels ($)',def:0.15}],
+      exciseDef:{mgTHC:350,gramsRef:0.5}},
+    {id:'infused_pr',label:'Infused Pre-roll',ocsSubcat:'Infused pre-rolls',
+      notice:'Cannabis extract class under CRA EDM6-3 — excise = total THC mg × $0.01 (not per-gram flower rate). OCS markup: +29%.',
+      cogs:[{id:'flower',label:'Flower ($)',def:0.64},{id:'extract',label:'Extract/infusion ($/g)',def:1.10},{id:'cone',label:'Cone/tube ($)',def:0.35},{id:'outer',label:'Outer pkg ($)',def:0.35},{id:'labels',label:'Labels ($)',def:0.075},{id:'lp',label:'Labour portioning ($)',def:2.00},{id:'lk',label:'Labour packaging ($)',def:0.54}],
+      exciseDef:{mgTHC:700,gramsRef:1}},
+    {id:'concentrate',label:'Concentrate (shatter / live resin / rosin)',ocsSubcat:'Concentrates',
+      cogs:[{id:'extract',label:'Extract ($/g)',def:7.80},{id:'vessel',label:'Vessel ($)',def:0.50},{id:'pkg',label:'Packaging ($)',def:0.35},{id:'labels',label:'Labels ($)',def:0.10},{id:'labour',label:'Labour ($)',def:1.00}],
+      exciseDef:{mgTHC:850,gramsRef:1}},
+    {id:'hash',label:'Hash / kief / bubble hash',ocsSubcat:'Hash / kief',
+      cogs:[{id:'extract',label:'Extract ($/g)',def:6.00},{id:'vessel',label:'Vessel/pkg ($)',def:0.60},{id:'labels',label:'Labels ($)',def:0.10},{id:'labour',label:'Labour ($)',def:1.50}],
+      exciseDef:{mgTHC:700,gramsRef:1}},
+    {id:'oil_tincture',label:'Oil / tincture (sublingual or ingested)',ocsSubcat:'Cannabis oils',
+      notice:'Sublingual/ingested oils = cannabis extracts. Max 10mg THC per dispense activation. OCS markup: +25%.',
+      cogs:[{id:'extract',label:'Oil ($/mL)',def:7.00},{id:'vessel',label:'Bottle/dropper ($)',def:0.50},{id:'pkg',label:'Outer pkg ($)',def:0.40},{id:'labels',label:'Labels ($)',def:0.10},{id:'labour',label:'Fill/cap labour ($)',def:0.30}],
+      exciseDef:{mgTHC:300,gramsRef:30}},
+    {id:'capsule',label:'Capsule / softgel (ingested)',ocsSubcat:'Capsules / softgels',
+      notice:'Capsules for ingestion are cannabis extracts. Max 10mg THC per discrete unit. OCS markup: +25%.',
+      cogs:[{id:'extract',label:'Oil/extract ($/cap)',def:0.80},{id:'cap',label:'Capsule shell ($)',def:0.10},{id:'pkg',label:'Packaging ($)',def:0.40},{id:'labels',label:'Labels ($)',def:0.10},{id:'labour',label:'Fill/cap labour ($)',def:0.25}],
+      exciseDef:{mgTHC:100,gramsRef:10}},
+  ]},
+  edible:{label:'Edible Cannabis',exciseType:'thc',
+    notice:'All food and beverages. Max 10mg THC per discrete unit. Beverages are edible cannabis — not a separate class. Max 0.5% ethyl alcohol. OCS markup: +25% across all edible subcategories.',
+    noticeType:'info',thcLimitContainer:null,thcLimitUnit:10,subcats:[
+    {id:'solid_edible',label:'Solid edible (chocolate, gummies, baked goods)',ocsSubcat:'Edible cannabis — solid',
+      cogs:[{id:'base',label:'Base ingredient ($)',def:1.20},{id:'distillate',label:'THC distillate ($)',def:0.80},{id:'pkg',label:'Packaging ($)',def:0.60},{id:'labels',label:'Labels ($)',def:0.10},{id:'labour',label:'Labour/production ($)',def:2.00}],
+      exciseDef:{mgTHC:100,gramsRef:0}},
+    {id:'nonsolid_edible',label:'Non-solid edible (honey, sauce, powder)',ocsSubcat:'Edible cannabis — non-solid',
+      cogs:[{id:'base',label:'Base ingredient ($)',def:1.00},{id:'distillate',label:'THC distillate ($)',def:0.80},{id:'pkg',label:'Packaging ($)',def:0.50},{id:'labels',label:'Labels ($)',def:0.10},{id:'labour',label:'Labour ($)',def:1.50}],
+      exciseDef:{mgTHC:100,gramsRef:0}},
+    {id:'beverage',label:'Cannabis beverage (drink, sparkling, tea)',ocsSubcat:'Cannabis beverages',
+      notice:'Beverages are edible cannabis per Health Canada. Max 10mg THC per serving. No added caffeine (except naturally occurring, e.g. tea). OCS markup: +25%.',
+      cogs:[{id:'base',label:'Beverage base ($)',def:0.80},{id:'infusion',label:'THC infusion ($)',def:0.50},{id:'can',label:'Can/bottle ($)',def:0.25},{id:'pkg',label:'Multi-pack pkg ($)',def:0.30},{id:'labels',label:'Labels ($)',def:0.10},{id:'labour',label:'Fill/seal labour ($)',def:0.40}],
+      exciseDef:{mgTHC:10,gramsRef:0.355}},
+  ]},
+  topical:{label:'Cannabis Topicals',exciseType:'thc',
+    notice:'Applied to external body surfaces (skin, hair, nails). Max 1,000mg THC per container. Cannot be represented for use near the eye or on damaged skin. OCS markup: +25%.',
+    noticeType:'info',thcLimitContainer:1000,thcLimitUnit:null,subcats:[
+    {id:'cream_lotion',label:'Cream / lotion / balm',ocsSubcat:'Cannabis topicals',
+      cogs:[{id:'base',label:'Cream/lotion base ($)',def:3.00},{id:'extract',label:'CBD/THC extract ($)',def:1.00},{id:'container',label:'Container ($)',def:0.80},{id:'pkg',label:'Outer pkg ($)',def:0.40},{id:'labels',label:'Labels ($)',def:0.15},{id:'labour',label:'Blend/fill labour ($)',def:1.00}],
+      exciseDef:{mgTHC:50,gramsRef:30}},
+    {id:'transdermal',label:'Transdermal patch / gel',ocsSubcat:'Cannabis topicals',
+      cogs:[{id:'base',label:'Patch/gel base ($)',def:4.00},{id:'extract',label:'CBD/THC extract ($)',def:1.50},{id:'pkg',label:'Packaging ($)',def:0.60},{id:'labels',label:'Labels ($)',def:0.15},{id:'labour',label:'Production labour ($)',def:2.00}],
+      exciseDef:{mgTHC:20,gramsRef:0}},
+    {id:'spray_topical',label:'Topical spray',ocsSubcat:'Cannabis topicals',
+      cogs:[{id:'base',label:'Spray base ($)',def:2.50},{id:'extract',label:'CBD/THC extract ($)',def:0.80},{id:'bottle',label:'Spray bottle ($)',def:1.00},{id:'labels',label:'Labels ($)',def:0.15},{id:'labour',label:'Labour ($)',def:0.80}],
+      exciseDef:{mgTHC:50,gramsRef:30}},
+  ]},
+  plant:{label:'Cannabis Plants',exciseType:'plant',
+    notice:'Vegetative cannabis plants for consumers. Excise = higher of $1.00/plant or 10% ad valorem.',
+    noticeType:'info',thcLimitContainer:null,thcLimitUnit:null,subcats:[
+    {id:'plant',label:'Vegetative cannabis plant',ocsSubcat:'Dried flower',
+      cogs:[{id:'clone',label:'Clone/seedling ($)',def:5.00},{id:'pot',label:'Pot/medium ($)',def:1.50},{id:'pkg',label:'Packaging ($)',def:0.50},{id:'labels',label:'Labels ($)',def:0.20},{id:'labour',label:'Labour ($)',def:2.00}],
+      exciseDef:{units:1,dutiable:15}},
+  ]},
+  seed:{label:'Cannabis Plant Seeds',exciseType:'seed',
+    notice:'Cannabis seeds for consumers. Excise = higher of $1.00/viable seed or 10% ad valorem. OCS markup: +25%.',
+    noticeType:'info',thcLimitContainer:null,thcLimitUnit:null,subcats:[
+    {id:'seed',label:'Cannabis seed pack',ocsSubcat:'Cannabis seeds',
+      cogs:[{id:'seeds',label:'Seeds cost ($)',def:3.00},{id:'pkg',label:'Packaging ($)',def:0.50},{id:'labels',label:'Labels ($)',def:0.15},{id:'labour',label:'Labour ($)',def:0.50}],
+      exciseDef:{units:5,dutiable:20}},
+  ]},
+};
 
-function roundUp5(v){return Math.ceil(v/0.05)*0.05;}
-function fmt(v){return '$'+v.toFixed(2);}
-function fmtD(v){return '$'+v.toLocaleString('en-CA',{minimumFractionDigits:0,maximumFractionDigits:0});}
-function fmtN(v){return v.toLocaleString('en-CA',{minimumFractionDigits:0,maximumFractionDigits:0});}
-function fmtPct(v){return (v*100).toFixed(1)+'%';}
+// ── STATE ────────────────────────────────────────────────────────────────────
+let currentClass = 'dried', currentSubcatIdx = 0;
+let competitors = [
+  {brand:'Pistol & Paris', sku:'Pink Goo 7G',          price:79.95, grams:7},
+  {brand:'Broken Coast',   sku:'Holy Grail Kush 7G',   price:67.80, grams:7},
+];
 
-function getClassCfg(){return CLASSES[currentClass];}
-function getSubcat(){return getClassCfg().subcats[currentSubcatIdx]||getClassCfg().subcats[0];}
-function getHomeProv(){return PROVINCES.find(p=>p.code===document.getElementById('home-prov').value)||PROVINCES[0];}
-function getCogsFields(){
-  const sc=getSubcat();
-  return sc.cogs.map(f=>({label:f.label,value:parseFloat(document.getElementById('cogs-'+f.id)?.value)||0}));
+// ── HELPERS ──────────────────────────────────────────────────────────────────
+const roundUp5 = v => Math.ceil(v / 0.05) * 0.05;
+const fmt      = v => '$' + v.toFixed(2);
+const fmtPct   = v => (v * 100).toFixed(1) + '%';
+
+const getClassCfg  = () => CLASSES[currentClass];
+const getSubcat    = () => getClassCfg().subcats[currentSubcatIdx] || getClassCfg().subcats[0];
+const getHomeProv  = () => PROVINCES.find(p => p.code === document.getElementById('home-prov').value) || PROVINCES[0];
+const getCogsFields= () => getSubcat().cogs.map(f => ({label:f.label, value:parseFloat(document.getElementById('cogs-'+f.id)?.value)||0}));
+const getOCSMarkup = () => OCS_MARKUPS[document.getElementById('subcat-sel').value] || 0.25;
+const getRegFeeRate= () => REG_FEE_RATES[licenceClass] || 0.023;
+
+function computeChain(prov, landedCost, ocsMarkup){
+  const mu = prov.wsMarkupFromOCS ? ocsMarkup : (prov.wsMarkup || 0);
+  let ws, ec, msrp;
+  if(prov.directToRetail){
+    ws=landedCost; ec=landedCost; msrp=landedCost*(1+prov.hst);
+  } else {
+    ws = landedCost * (1 + mu);
+    ec = prov.ecommMarkup > 0 ? ws * (1 + prov.ecommMarkup) : ws;
+    msrp = prov.roundUp5 ? roundUp5(ec*(1+prov.hst)) : ec*(1+prov.hst);
+  }
+  return {ws, ec, msrp, mu};
 }
 
-function calcRegFee(cls,rev){
-  rev=Math.max(0,rev);
-  const minFee=cls==='micro'?2500:23000;
-  const pctFee=cls==='micro'?(rev<=1e6?rev*0.01:(1e6*0.01+(rev-1e6)*0.023)):rev*0.023;
-  return{fee:Math.max(minFee,pctFee),minFee,pctFee,usingMin:pctFee<=minFee};
+function backSolveLanded(goalMsrp, prov, ocsMarkup){
+  if(!goalMsrp || goalMsrp <= 0) return null;
+  const mu = prov.wsMarkupFromOCS ? ocsMarkup : (prov.wsMarkup || 0);
+  if(prov.directToRetail) return goalMsrp / (1 + prov.hst);
+  const ecPreTax = goalMsrp / (1 + prov.hst);
+  const ws = prov.ecommMarkup > 0 ? ecPreTax / (1 + prov.ecommMarkup) : ecPreTax;
+  return ws / (1 + mu);
 }
 
 function computeExcise(){
-  const cls=getClassCfg();
-  const sc=getSubcat();
-  const type=cls.exciseType;
-  let excise=0,method='',rows=[];
-
+  const cls=getClassCfg(), sc=getSubcat(), type=cls.exciseType, def=sc.exciseDef||{};
+  let excise=0, method='', rows=[];
   if(type==='flower'){
     const gF=parseFloat(document.getElementById('ex-g-flower')?.value)||0;
     const gN=parseFloat(document.getElementById('ex-g-nonflower')?.value)||0;
     const dutiable=parseFloat(document.getElementById('ex-dutiable')?.value)||0;
-    const flat=(gF*1.00)+(gN*0.30);
-    const adv=dutiable*0.10;
-    const useFlat=flat>=adv;
-    excise=useFlat?flat:adv;
-    method=useFlat?'flat-rate ($1.00/g)':'ad valorem (10%)';
+    const flat=(gF*1.00)+(gN*0.30), adv=dutiable*0.10, useFlat=flat>=adv;
+    excise=useFlat?flat:adv; method=useFlat?'flat-rate ($1.00/g)':'ad valorem (10%)';
     rows=[
-      {l:'Flat-rate: $1.00/g × '+gF+'g flowering'+(gN>0?' + $0.30/g × '+gN+'g non-flower':''),v:fmt(flat),win:useFlat,bold:true},
-      {l:'Ad valorem: 10% × $'+dutiable.toFixed(2)+' dutiable',v:fmt(adv),win:!useFlat,bold:true},
-      {l:'Excise payable → '+method,v:fmt(excise),bold:true,payable:true},
+      {l:'Flat-rate: $1.00/g × '+gF+'g flowering'+(gN>0?' + $0.30/g × '+gN+'g non-flower':''), v:fmt(flat), win:useFlat, bold:true},
+      {l:'Ad valorem: 10% × $'+dutiable.toFixed(2)+' dutiable', v:fmt(adv), win:!useFlat, bold:true},
+      {l:'Excise payable → '+method, v:fmt(excise), bold:true, payable:true},
     ];
   } else if(type==='thc'){
     const mg=parseFloat(document.getElementById('ex-mg-thc')?.value)||0;
-    excise=mg*0.01;
-    method='$0.01/mg THC';
+    excise=mg*0.01; method='$0.01/mg THC';
     rows=[
-      {l:'$0.0025/mg (fed) + $0.0075/mg (prov) × '+mg+'mg THC',v:fmt(excise)},
-      {l:'Ad valorem = 0% for extracts/edibles/topicals',v:'—'},
-      {l:'Excise payable',v:fmt(excise),bold:true,payable:true},
+      {l:'$0.0025/mg (fed) + $0.0075/mg (prov) × '+mg+'mg THC', v:fmt(excise)},
+      {l:'Ad valorem = 0% for extracts / edibles / topicals', v:'—'},
+      {l:'Excise payable', v:fmt(excise), bold:true, payable:true},
     ];
-  } else if(type==='plant'||type==='seed'){
+  } else {
     const units=parseFloat(document.getElementById('ex-units')?.value)||0;
     const dutiable=parseFloat(document.getElementById('ex-dutiable-ps')?.value)||0;
-    const flat=units*1.00;
-    const adv=dutiable*0.10;
-    const useFlat=flat>=adv;
-    excise=useFlat?flat:adv;
-    method=useFlat?'flat-rate ($1.00/'+type+')':'ad valorem (10%)';
+    const flat=units*1.00, adv=dutiable*0.10, useFlat=flat>=adv;
+    excise=useFlat?flat:adv; method=useFlat?'flat-rate ($1.00/unit)':'ad valorem (10%)';
     rows=[
-      {l:'Flat-rate: $1.00/'+type+' × '+units+' '+type+'s',v:fmt(flat),win:useFlat,bold:true},
-      {l:'Ad valorem: 10% × $'+dutiable.toFixed(2),v:fmt(adv),win:!useFlat,bold:true},
-      {l:'Excise payable → '+method,v:fmt(excise),bold:true,payable:true},
+      {l:'Flat-rate: $1.00/unit × '+units+' units', v:fmt(flat), win:useFlat, bold:true},
+      {l:'Ad valorem: 10% × $'+dutiable.toFixed(2), v:fmt(adv), win:!useFlat, bold:true},
+      {l:'Excise payable → '+method, v:fmt(excise), bold:true, payable:true},
     ];
   }
-  return{excise,method,rows};
+  return {excise, method, rows};
 }
 
 function renderExciseInputs(){
-  const cls=getClassCfg();
-  const sc=getSubcat();
-  const type=cls.exciseType;
-  const def=sc.exciseDef||{};
-  const c=document.getElementById('excise-inputs');
-  document.getElementById('excise-sl').textContent='Excise duty inputs — '+cls.label+(type==='flower'?' (gram-based)':type==='thc'?' (THC-mg based)':' (per unit)');
-
+  const cls=getClassCfg(), sc=getSubcat(), type=cls.exciseType, def=sc.exciseDef||{};
+  document.getElementById('excise-sl').textContent = 'Excise duty — ' + cls.label +
+    (type==='flower' ? ' (gram-based, CRA EDM6-3)' : type==='thc' ? ' (THC-mg based, CRA EDM6-3)' : ' (per unit, CRA EDM6-3)');
+  const c = document.getElementById('excise-inputs');
   if(type==='flower'){
     c.innerHTML=`<div class="g4" style="margin-bottom:.75rem;">
-      <div class="fi"><label>Grams — flowering material</label><input type="number" id="ex-g-flower" step="0.1" value="${def.gFlower||7}"/><div class="hint">Net stamped weight</div></div>
+      <div class="fi"><label>Grams — flowering material</label><input type="number" id="ex-g-flower" step="0.1" value="${def.gFlower||7}"/><div class="hint">Net stamped weight of flower</div></div>
       <div class="fi"><label>Grams — non-flowering</label><input type="number" id="ex-g-nonflower" step="0.1" value="${def.gNonFlower||0}"/><div class="hint">Stems/trim (usually 0)</div></div>
-      <div class="fi"><label>Dutiable amount ($)</label><input type="number" id="ex-dutiable" step="0.01" value="${def.dutiable||10}"/><div class="hint">Your selling price to board — ad valorem = 10%</div></div>
-      <div class="fi"><label>Excise payable ($)</label><input type="number" id="excise-display" readonly value="0"/><div class="hint">Higher of flat-rate or ad valorem</div></div>
+      <div class="fi"><label>Dutiable amount ($)</label><input type="number" id="ex-dutiable" step="0.01" value="${def.dutiable||10}"/><div class="hint">Your selling price to board — ad valorem = 10% of this</div></div>
+      <div class="fi"><label>Excise payable ($)</label><input type="number" id="excise-display" readonly value="0"/><div class="hint">Higher of flat-rate or ad valorem — auto-calculated</div></div>
     </div>`;
   } else if(type==='thc'){
-    const hint=sc.id==='infused_pr'?'e.g. 1G infused PR ~0.6g flower @25% + 0.4g live resin @70% ≈ 430mg = $4.30'
-      :sc.id==='vape_aio'||sc.id==='vape_510'?'e.g. 0.5g vape at 70% THC = 350mg = $3.50'
-      :sc.id==='beverage'?'e.g. 355mL drink with 5mg THC = 5mg = $0.05 excise'
-      :'Total THC across all cannabis in the package';
+    const hint = sc.id==='infused_pr' ? 'e.g. 1G PR: ~0.6g @25% + 0.4g live resin @70% ≈ 430mg = $4.30'
+      : (sc.id==='vape_aio'||sc.id==='vape_510') ? 'e.g. 0.5g vape @70% THC = 350mg = $3.50'
+      : sc.id==='beverage' ? 'e.g. 355mL drink with 5mg THC → $0.05 excise'
+      : 'Total THC across all cannabis in the package';
     c.innerHTML=`<div class="g3" style="margin-bottom:.75rem;">
       <div class="fi"><label>Total THC (mg per package)</label><input type="number" id="ex-mg-thc" step="1" value="${def.mgTHC||100}"/><div class="hint">${hint}</div></div>
-      <div class="fi"><label>Excise payable ($)</label><input type="number" id="excise-display" readonly value="0"/><div class="hint">mg THC × $0.01 — no ad valorem</div></div>
-      <div class="fi"><label>Package size (g or mL) — for $/g reference</label><input type="number" id="ex-grams-ref" step="0.1" value="${def.gramsRef||1}"/></div>
+      <div class="fi"><label>Excise payable ($)</label><input type="number" id="excise-display" readonly value="0"/><div class="hint">mg THC × $0.01 — no ad valorem for extracts / edibles / topicals</div></div>
+      <div class="fi"><label>Package size (g or mL) — $/g ref</label><input type="number" id="ex-grams-ref" step="0.1" value="${def.gramsRef||1}"/></div>
     </div>`;
   } else {
     c.innerHTML=`<div class="g3" style="margin-bottom:.75rem;">
-      <div class="fi"><label>Number of ${type}s in package</label><input type="number" id="ex-units" step="1" value="${def.units||1}"/></div>
+      <div class="fi"><label>Units in package</label><input type="number" id="ex-units" step="1" value="${def.units||1}"/></div>
       <div class="fi"><label>Dutiable amount ($)</label><input type="number" id="ex-dutiable-ps" step="0.01" value="${def.dutiable||10}"/><div class="hint">Your selling price to board — ad valorem = 10%</div></div>
       <div class="fi"><label>Excise payable ($)</label><input type="number" id="excise-display" readonly value="0"/><div class="hint">Higher of $1.00/unit or 10% ad valorem</div></div>
     </div>`;
   }
-  c.querySelectorAll('input:not([readonly])').forEach(el=>el.addEventListener('input',calculate));
+  c.querySelectorAll('input:not([readonly])').forEach(el => el.addEventListener('input', calculate));
 }
 
 function renderSubcats(){
-  const cls=getClassCfg();
-  const row=document.getElementById('subcat-row');
-  document.getElementById('subcat-label').textContent='Format:';
-  const btns=cls.subcats.map((sc,i)=>`<button class="sub-btn${i===currentSubcatIdx?' active':''}" data-idx="${i}">${sc.label}</button>`).join('');
-  row.innerHTML='<span class="class-label" id="subcat-label">Format:</span>'+btns;
-  row.querySelectorAll('.sub-btn').forEach(btn=>{
-    btn.addEventListener('click',()=>{
-      currentSubcatIdx=parseInt(btn.dataset.idx);
-      renderSubcats();
-      renderCogsInputs();
-      renderExciseInputs();
-      renderOCSSubcat();
-      calculate();
-    });
-  });
+  const cls=getClassCfg(), row=document.getElementById('subcat-row');
+  row.innerHTML = '<span class="subcat-label">Format:</span>' +
+    cls.subcats.map((sc,i) => `<button class="sub-btn${i===currentSubcatIdx?' active':''}" data-idx="${i}">${sc.label}</button>`).join('');
+  row.querySelectorAll('.sub-btn').forEach(btn => btn.addEventListener('click', () => {
+    currentSubcatIdx = parseInt(btn.dataset.idx);
+    renderSubcats(); renderCogsInputs(); renderExciseInputs(); renderOCSSubcat(); renderClassNotice(); calculate();
+  }));
 }
 
 function renderCogsInputs(){
-  const sc=getSubcat();
-  document.getElementById('cogs-sl').textContent='COGS — '+sc.label.toLowerCase();
-  const fields=sc.cogs;
-  const cols=Math.min(fields.length,3);
-  let h=`<div style="display:grid;grid-template-columns:repeat(${cols},1fr);gap:10px;margin-bottom:.75rem;">`;
-  fields.forEach(f=>{h+=`<div class="fi"><label>${f.label}</label><input type="number" id="cogs-${f.id}" step="0.01" value="${f.def}"/></div>`;});
-  h+='</div>';
-  document.getElementById('cogs-inputs').innerHTML=h;
-  document.getElementById('cogs-inputs').querySelectorAll('input').forEach(el=>el.addEventListener('input',calculate));
+  const sc=getSubcat(), fields=sc.cogs, cols=Math.min(fields.length, 3);
+  document.getElementById('cogs-sl').textContent = 'COGS — ' + sc.label.toLowerCase();
+  document.getElementById('cogs-inputs').innerHTML =
+    `<div class="g${cols}" style="margin-bottom:.75rem;">${fields.map(f =>
+      `<div class="fi"><label>${f.label}</label><input type="number" id="cogs-${f.id}" step="0.01" value="${f.def}"/></div>`
+    ).join('')}</div>`;
+  document.getElementById('cogs-inputs').querySelectorAll('input').forEach(el => el.addEventListener('input', calculate));
 }
 
 function renderOCSSubcat(){
-  const sc=getSubcat();
-  const markup=OCS_SUBCATS_MAP[sc.ocsSubcat]||0.09;
-  const sel=document.getElementById('subcat-sel');
-  // Build options — show current subcat's OCS category plus any alternatives in same class
-  const cls=getClassCfg();
-  const uniqueOCS=[...new Set(cls.subcats.map(s=>s.ocsSubcat))];
-  sel.innerHTML=uniqueOCS.map(o=>`<option value="${o}"${o===sc.ocsSubcat?' selected':''}>${o} (+${Math.round((OCS_SUBCATS_MAP[o]||0.09)*100)}%)</option>`).join('');
-  document.getElementById('ocsmu').textContent='OCS: +'+Math.round(markup*100)+'%';
-}
-
-function getOCSMarkup(){
-  const sel=document.getElementById('subcat-sel');
-  return OCS_SUBCATS_MAP[sel.value]||0.09;
+  const sc=getSubcat(), cls=getClassCfg();
+  const uniqueOCS = [...new Set(cls.subcats.map(s => s.ocsSubcat))];
+  document.getElementById('subcat-sel').innerHTML = uniqueOCS.map(o =>
+    `<option value="${o}"${o===sc.ocsSubcat?' selected':''}>${o} (+${Math.round((OCS_MARKUPS[o]||0.25)*100)}% OCS)</option>`
+  ).join('');
+  document.getElementById('ocsmu').textContent = '+' + Math.round((OCS_MARKUPS[sc.ocsSubcat]||0.25)*100) + '% OCS markup';
 }
 
 function renderClassNotice(){
-  const cls=getClassCfg();
-  const sc=getSubcat();
-  const el=document.getElementById('class-notice');
-  const msg=sc.notice||cls.notice||'';
-  if(msg){el.className='notice show '+( sc.notice?'info':cls.noticeType||'info');el.textContent=msg;}
-  else{el.className='notice';}
+  const cls=getClassCfg(), sc=getSubcat(), el=document.getElementById('class-notice');
+  const msg = sc.notice || cls.notice || '';
+  if(msg){ el.className='notice show '+(sc.notice?'purple':cls.noticeType||'info'); el.textContent=msg; }
+  else{ el.className='notice'; }
 }
 
-function renderUI(){
-  renderSubcats();
-  renderCogsInputs();
-  renderExciseInputs();
-  renderOCSSubcat();
-  renderClassNotice();
-}
-
-function computeChain(prov,landedCost,ocsMarkup){
-  const mu=prov.wsMarkupFromOCS?ocsMarkup:(prov.wsMarkup||0);
-  let ws,ec,msrp;
-  if(prov.directToRetail){ws=landedCost;ec=landedCost;msrp=landedCost*(1+prov.hst);}
-  else{
-    ws=landedCost*(1+mu);
-    ec=prov.ecommMarkup>0?ws*(1+prov.ecommMarkup):ws;
-    msrp=prov.roundUp5?roundUp5(ec*(1+prov.hst)):ec*(1+prov.hst);
-  }
-  return{ws,ec,msrp,mu};
+function updateLicenceUI(){
+  const rate = getRegFeeRate();
+  document.getElementById('reg-fee-pct-display').textContent = fmtPct(rate);
+  document.getElementById('reg-fee-note').textContent = 'of net rev · min $' + (licenceClass==='micro'?'2,500':'23,000') + '/yr';
 }
 
 function calculate(){
-  const cls=getClassCfg();
-  const sc=getSubcat();
-
-  // Reg fee
-  const licCls=document.getElementById('licence-class').value;
-  const annRev=parseFloat(document.getElementById('annual-revenue').value)||0;
-  const skuUnits=Math.max(1,parseFloat(document.getElementById('sku-units').value)||1);
-  const{fee,minFee,pctFee,usingMin}=calcRegFee(licCls,annRev);
-  const perUnit=fee/skuUnits;
-
-  document.getElementById('reg-fee-rows').innerHTML=[
-    {l:'Licence minimum',v:fmtD(minFee),win:usingMin},
-    {l:(licCls==='micro'?'1%/2.3% tiered':'2.3%')+' × '+fmtD(annRev)+' revenue',v:fmtD(pctFee),win:!usingMin},
-    {l:'Annual fee payable',v:fmtD(fee),bold:true,payable:true},
-    {l:'÷ '+fmtN(skuUnits)+' units → per-unit allocation',v:fmt(perUnit),bold:true},
-  ].map(r=>`<div class="crow${r.payable?' hl':''}"><span class="cl">${r.win?'✓ ':''}${r.bold?'<strong>'+r.l+'</strong>':r.l}</span><span class="cv">${r.bold?'<strong>'+r.v+'</strong>':r.v}</span></div>`).join('');
+  const cls=getClassCfg(), sc=getSubcat(), regFeeRate=getRegFeeRate();
 
   // Excise
-  const{excise,method:exciseMethod,rows:exciseRows}=computeExcise();
-  const disp=document.getElementById('excise-display');
-  if(disp)disp.value=excise.toFixed(3);
-  document.getElementById('excise-rows').innerHTML=exciseRows.map(r=>`<div class="crow${r.payable?' hl':''}"><span class="cl">${r.win?'✓ ':''}${r.bold?'<strong>'+r.l+'</strong>':r.l}</span><span class="cv${r.win?' win':''}">${r.bold?'<strong>'+r.v+'</strong>':r.v}</span></div>`).join('');
+  const {excise, method:exciseMethod, rows:exciseRows} = computeExcise();
+  const disp = document.getElementById('excise-display');
+  if(disp) disp.value = excise.toFixed(3);
+  document.getElementById('excise-rows').innerHTML = exciseRows.map(r =>
+    `<div class="crow${r.payable?' hl':''}"><span class="cl">${r.win?'✓ ':''}${r.bold?'<strong>'+r.l+'</strong>':r.l}</span><span class="cv${r.win?' win':''}">${r.bold?'<strong>'+r.v+'</strong>':r.v}</span></div>`
+  ).join('');
 
-  // THC limit check
-  const thcNotice=document.getElementById('thc-limit-notice');
-  const mgTHC=cls.exciseType==='thc'?(parseFloat(document.getElementById('ex-mg-thc')?.value)||0):0;
-  if(cls.thcLimitContainer&&mgTHC>0){
-    if(mgTHC>cls.thcLimitContainer){
-      thcNotice.className='notice show danger';
-      thcNotice.textContent='⛔ THC LIMIT EXCEEDED: '+mgTHC+'mg exceeds the Health Canada maximum of '+cls.thcLimitContainer+'mg THC per container for '+cls.label+'. This product cannot be sold legally.';
-    } else {
-      thcNotice.className='notice show ok';
-      thcNotice.textContent='✓ Within Health Canada THC container limit ('+mgTHC+'mg of '+cls.thcLimitContainer+'mg max)';
-    }
-  } else if(cls.thcLimitUnit&&mgTHC>0&&sc.exciseDef?.gramsRef===0){
-    // discrete unit check for edibles
-    if(mgTHC>cls.thcLimitUnit){
-      thcNotice.className='notice show danger';
-      thcNotice.textContent='⛔ THC LIMIT EXCEEDED: '+mgTHC+'mg per discrete unit exceeds the Health Canada maximum of '+cls.thcLimitUnit+'mg THC per discrete unit for '+cls.label+'.';
-    } else {
-      thcNotice.className='notice show ok';
-      thcNotice.textContent='✓ Within Health Canada THC per-unit limit ('+mgTHC+'mg of '+cls.thcLimitUnit+'mg max per discrete unit)';
-    }
-  } else {thcNotice.className='notice';}
+  // THC limit
+  const mgTHC = cls.exciseType==='thc' ? (parseFloat(document.getElementById('ex-mg-thc')?.value)||0) : 0;
+  const thcNotice = document.getElementById('thc-limit-notice');
+  if(cls.thcLimitContainer && mgTHC > 0){
+    thcNotice.className = mgTHC > cls.thcLimitContainer ? 'notice show danger' : 'notice show ok';
+    thcNotice.textContent = mgTHC > cls.thcLimitContainer
+      ? '⛔ THC LIMIT EXCEEDED: '+mgTHC+'mg exceeds Health Canada maximum of '+cls.thcLimitContainer+'mg per container for '+cls.label+'.'
+      : '✓ Within Health Canada THC container limit ('+mgTHC+'mg of '+cls.thcLimitContainer+'mg max)';
+  } else if(cls.thcLimitUnit && mgTHC > 0 && sc.exciseDef?.gramsRef === 0){
+    thcNotice.className = mgTHC > cls.thcLimitUnit ? 'notice show danger' : 'notice show ok';
+    thcNotice.textContent = mgTHC > cls.thcLimitUnit
+      ? '⛔ THC LIMIT EXCEEDED: '+mgTHC+'mg per unit exceeds Health Canada maximum of '+cls.thcLimitUnit+'mg for '+cls.label+'.'
+      : '✓ Within Health Canada per-unit THC limit ('+mgTHC+'mg of '+cls.thcLimitUnit+'mg max)';
+  } else { thcNotice.className = 'notice'; }
 
   // COGS
-  const fields=getCogsFields();
-  const rawCogs=fields.reduce((s,f)=>s+f.value,0);
-  const provDutyPct=(parseFloat(document.getElementById('prov-duty-pct').value)||0)/100;
-  const gtm=parseFloat(document.getElementById('gtm').value)||0;
-  const freight=parseFloat(document.getElementById('freight').value)||0;
-  const partner=parseFloat(document.getElementById('partner').value)||0;
-  const tgtMargin=(parseFloat(document.getElementById('tgt-margin').value)||35)/100;
-  const ocsMarkup=getOCSMarkup();
+  const fields = getCogsFields();
+  const rawCogs = fields.reduce((s,f) => s+f.value, 0);
+  const provDutyPct = (parseFloat(document.getElementById('prov-duty-pct').value)||0) / 100;
+  const gtm    = parseFloat(document.getElementById('gtm').value)    || 0;
+  const freight= parseFloat(document.getElementById('freight').value)|| 0;
+  const partner= parseFloat(document.getElementById('partner').value) || 0;
+  const tgtMargin = (parseFloat(document.getElementById('tgt-margin').value)||35) / 100;
+  const ocsMarkup = getOCSMarkup();
 
-  const landedCost=rawCogs+excise;
-  const netRev=rawCogs;
-  const provDutyAdj=netRev*provDutyPct;
-  const totalCogs=rawCogs+gtm+freight+partner+perUnit+provDutyAdj;
-  const gmVal=netRev-totalCogs;
-  const margin=netRev>0?gmVal/netRev:0;
+  const landedCost = rawCogs + excise;
+  const netRev = rawCogs;
+  const regFeeAmt  = netRev * regFeeRate;
+  const provDutyAdj= netRev * provDutyPct;
+  const totalCogs  = rawCogs + gtm + freight + partner + regFeeAmt + provDutyAdj;
+  const gmVal  = netRev - totalCogs;
+  const margin = netRev > 0 ? gmVal / netRev : 0;
 
-  const home=getHomeProv();
-  const chain=computeChain(home,landedCost,ocsMarkup);
+  const home  = getHomeProv();
+  const chain = computeChain(home, landedCost, ocsMarkup);
 
-  document.getElementById('chain-label').textContent=home.name+' ('+home.board+')';
-  document.getElementById('fc-landed').textContent=fmt(landedCost);
-  document.getElementById('fc-ws').textContent=fmt(chain.ws);
-  document.getElementById('fc-ws-sub').textContent=home.directToRetail?'LP direct':('+'+Math.round(chain.mu*100)+'% '+home.board);
-  document.getElementById('fc-ec').textContent=fmt(chain.ec);
-  document.getElementById('fc-ec-sub').textContent=home.ecommMarkup>0?('+'+Math.round(home.ecommMarkup*100)+'% eComm'):'retail price';
-  document.getElementById('fc-msrp').textContent=fmt(chain.msrp);
-  document.getElementById('fc-hst-sub').textContent='+'+Math.round(home.hst*100)+'%'+(home.roundUp5?', ↑$0.05':'');
+  // Pricing chain display
+  document.getElementById('chain-label').textContent = home.name + ' (' + home.board + ')';
+  document.getElementById('fc-landed').textContent = fmt(landedCost);
+  document.getElementById('fc-ws').textContent     = fmt(chain.ws);
+  document.getElementById('fc-ws-sub').textContent = home.directToRetail ? 'LP direct' : ('+'+Math.round(chain.mu*100)+'% markup');
+  document.getElementById('fc-ec').textContent     = fmt(chain.ec);
+  document.getElementById('fc-ec-sub').textContent = home.ecommMarkup > 0 ? ('+'+Math.round(home.ecommMarkup*100)+'% eComm') : 'retail (pre-tax)';
+  document.getElementById('fc-msrp').textContent   = fmt(chain.msrp);
+  document.getElementById('fc-hst-sub').textContent= 'incl. '+Math.round(home.hst*100)+'%'+(home.roundUp5?', ↑$0.05':'');
 
-  const mpct=margin*100;
-  const mbar=document.getElementById('mbar');
-  mbar.style.width=Math.max(0,Math.min(100,mpct))+'%';
-  mbar.className='mfill'+(margin>=tgtMargin?' g':margin>=tgtMargin*0.8?' w':' b');
-  document.getElementById('mpct').textContent=fmtPct(margin);
-  document.getElementById('mbadge').innerHTML=margin>=tgtMargin?'<span class="badge bg">On target</span>':margin>=tgtMargin*0.8?'<span class="badge bw">Near target</span>':'<span class="badge br">Below target</span>';
-  document.getElementById('mvt').textContent='Target: '+fmtPct(tgtMargin)+' · Gap: '+fmtPct(margin-tgtMargin);
+  // Margin bar
+  const mpct = margin * 100;
+  const mbar = document.getElementById('mbar');
+  mbar.style.width = Math.max(0, Math.min(100, mpct)) + '%';
+  mbar.className = 'mfill' + (margin>=tgtMargin?' g':margin>=tgtMargin*0.8?' w':' b');
+  document.getElementById('mpct').textContent = fmtPct(margin);
+  document.getElementById('mbadge').innerHTML = margin>=tgtMargin
+    ? '<span class="badge bg">On target</span>'
+    : margin>=tgtMargin*0.8 ? '<span class="badge bw">Near target</span>'
+    : '<span class="badge br">Below target</span>';
+  document.getElementById('mvt').textContent = 'Target: '+fmtPct(tgtMargin)+' · Gap: '+fmtPct(margin-tgtMargin);
 
-  // Price floor (OCS — flower/pre-roll/infused PR/vape)
-  const pf=PRICE_FLOORS[sc.id];
-  const pfEl=document.getElementById('pf-alert');
-  const gFloor=cls.exciseType==='flower'?(parseFloat(document.getElementById('ex-g-flower')?.value)||0):(sc.exciseDef?.gramsRef||0);
-  if(pf&&gFloor>0){
-    const onWs=computeChain(PROVINCES[0],landedCost,ocsMarkup).ws;
-    const minWs=(sc.id==='vape_aio'||sc.id==='vape_510')&&gFloor>1?(pf.flat_above_1g||pf.ws_per_g*gFloor):pf.ws_per_g*gFloor;
-    pfEl.className=onWs<minWs?'pf-alert show wn':'pf-alert show ok';
-    pfEl.textContent=onWs<minWs?'⚠ OCS price floor: min wholesale '+fmt(minWs)+' ('+fmt(pf.ws_per_g)+'/g). Your OCS wholesale '+fmt(onWs)+' is below floor.':'✓ Above OCS price floor (min wholesale: '+fmt(minWs)+')';
-  } else{pfEl.className='pf-alert';}
+  // Goal MSRP back-solve
+  const goalMsrp = parseFloat(document.getElementById('goal-msrp').value) || 0;
+  const goalResult = document.getElementById('goal-result');
+  if(goalMsrp > 0){
+    const reqLanded = backSolveLanded(goalMsrp, home, ocsMarkup);
+    const goalNetRev = reqLanded - excise;
+    const goalMargin = goalNetRev > 0 ? (goalNetRev - totalCogs) / goalNetRev : 0;
+    const gap = reqLanded - landedCost;
+    const gc = gap >= 0 ? (goalMargin >= tgtMargin ? 'ok' : 'wn') : 'bad';
+    document.getElementById('goal-landed').value = reqLanded.toFixed(2);
+    document.getElementById('goal-margin-display').value = (goalMargin * 100).toFixed(1);
+    goalResult.innerHTML = `
+      <div class="gr ${gc}"><div class="rl">Required landed cost</div><div class="rv">${fmt(reqLanded)}</div></div>
+      <div class="gr ${gc}"><div class="rl">Your actual landed cost</div><div class="rv">${fmt(landedCost)}</div></div>
+      <div class="gr ${gc}"><div class="rl">Gap</div><div class="rv">${gap>=0?'+':'-'}${fmt(Math.abs(gap))} ${gap>=0?'under max':'OVER max'}</div></div>
+      <div class="gr ${gc}"><div class="rl">Margin at goal MSRP</div><div class="rv">${fmtPct(goalMargin)}</div></div>`;
+  } else {
+    document.getElementById('goal-landed').value = '';
+    document.getElementById('goal-margin-display').value = '';
+    goalResult.innerHTML = '<div style="font-size:11px;color:#a3a3a3;">Enter a goal MSRP above to back-solve your required landed cost and resulting margin</div>';
+  }
+
+  // Price floor check (OCS Ontario only)
+  const pf = PRICE_FLOORS[sc.id];
+  const pfEl = document.getElementById('pf-alert');
+  const gFloor = cls.exciseType==='flower'
+    ? (parseFloat(document.getElementById('ex-g-flower')?.value)||0)
+    : (sc.exciseDef?.gramsRef||0);
+  if(pf && gFloor > 0){
+    const onWs = computeChain(PROVINCES[0], landedCost, ocsMarkup).ws;
+    const minWs = (sc.id==='vape_aio'||sc.id==='vape_510') && gFloor>1
+      ? (pf.flat_above_1g || pf.ws_per_g*gFloor) : pf.ws_per_g*gFloor;
+    pfEl.className = onWs < minWs ? 'pf-alert show wn' : 'pf-alert show ok';
+    pfEl.textContent = onWs < minWs
+      ? '⚠ OCS price floor: minimum wholesale for this format is '+fmt(minWs)+'. Your OCS wholesale '+fmt(onWs)+' is below the floor.'
+      : '✓ Above OCS price floor (minimum wholesale: '+fmt(minWs)+')';
+  } else { pfEl.className = 'pf-alert'; }
 
   // COGS breakdown
-  let bdH='';
-  fields.forEach(f=>{if(f.value>0)bdH+=`<div class="cogs-row"><span class="rl">${f.label}</span><span class="rv">${fmt(f.value)}</span></div>`;});
-  if(gtm>0)bdH+=`<div class="cogs-row"><span class="rl">Go-to-market</span><span class="rv">${fmt(gtm)}</span></div>`;
-  if(freight>0)bdH+=`<div class="cogs-row"><span class="rl">Freight</span><span class="rv">${fmt(freight)}</span></div>`;
-  if(partner>0)bdH+=`<div class="cogs-row"><span class="rl">Partner fee</span><span class="rv">${fmt(partner)}</span></div>`;
-  bdH+=`<div class="cogs-row"><span class="rl">Reg. fee alloc. (${fmtD(fee)} ÷ ${fmtN(skuUnits)}u)</span><span class="rv">${fmt(perUnit)}</span></div>`;
-  bdH+=`<div class="cogs-row"><span class="rl">Prov. additional duty (${fmtPct(provDutyPct)})</span><span class="rv">${fmt(provDutyAdj)}</span></div>`;
-  bdH+=`<div class="cogs-row"><span class="rl">Total COGS</span><span class="rv">${fmt(totalCogs)}</span></div>`;
-  document.getElementById('cogs-bd').innerHTML=bdH;
+  let bdH = '';
+  fields.forEach(f => { if(f.value>0) bdH += `<div class="cogs-row"><span class="rl">${f.label}</span><span class="rv">${fmt(f.value)}</span></div>`; });
+  if(gtm>0)     bdH += `<div class="cogs-row"><span class="rl">Go-to-market</span><span class="rv">${fmt(gtm)}</span></div>`;
+  if(freight>0) bdH += `<div class="cogs-row"><span class="rl">Freight</span><span class="rv">${fmt(freight)}</span></div>`;
+  if(partner>0) bdH += `<div class="cogs-row"><span class="rl">Partner fee</span><span class="rv">${fmt(partner)}</span></div>`;
+  bdH += `<div class="cogs-row"><span class="rl">Annual reg. fee <span class="hl">(${fmtPct(regFeeRate)} of net rev · ${licenceClass})</span></span><span class="rv">${fmt(regFeeAmt)}</span></div>`;
+  bdH += `<div class="cogs-row"><span class="rl">Prov. additional duty <span class="hl">(${fmtPct(provDutyPct)} of net rev)</span></span><span class="rv">${fmt(provDutyAdj)}</span></div>`;
+  bdH += `<div class="cogs-row"><span class="rl">Total COGS</span><span class="rv">${fmt(totalCogs)}</span></div>`;
+  document.getElementById('cogs-bd').innerHTML = bdH;
 
-  const mg=document.getElementById('bd-mgbox');
-  mg.className='cb'+(margin>=tgtMargin?' ok':margin>=tgtMargin*0.8?' wn':' dn');
-  document.getElementById('bd-excise').textContent=fmt(excise);
-  document.getElementById('bd-excise-m').textContent=exciseMethod;
-  document.getElementById('bd-regfee').textContent=fmt(perUnit);
-  document.getElementById('bd-net').textContent=fmt(netRev);
-  document.getElementById('bd-cogs').textContent=fmt(totalCogs);
-  document.getElementById('bd-mgval').textContent=fmt(gmVal);
-  document.getElementById('bd-mgsub').textContent=fmtPct(margin);
+  const mgbox = document.getElementById('bd-mgbox');
+  mgbox.className = 'cb' + (margin>=tgtMargin?' ok':margin>=tgtMargin*0.8?' wn':' dn');
+  document.getElementById('bd-excise').textContent  = fmt(excise);
+  document.getElementById('bd-excise-m').textContent = exciseMethod;
+  document.getElementById('bd-regfee').textContent  = fmt(regFeeAmt);
+  document.getElementById('bd-regfee-s').textContent= fmtPct(regFeeRate) + ' of net rev';
+  document.getElementById('bd-net').textContent     = fmt(netRev);
+  document.getElementById('bd-cogs').textContent    = fmt(totalCogs);
+  document.getElementById('bd-mgval').textContent   = fmt(gmVal);
+  document.getElementById('bd-mgsub').textContent   = fmtPct(margin);
 
-  const mL={'Gov wholesale':'<span class="model-pill m-gov">Gov wholesale</span>','Hybrid':'<span class="model-pill m-hyb">Hybrid</span>','Private retail':'<span class="model-pill m-priv">Private</span>','Gov monopoly':'<span class="model-pill m-gov">Gov monopoly</span>'};
-  document.getElementById('prov-tbody').innerHTML=PROVINCES.map(p=>{
-    const c2=computeChain(p,landedCost,ocsMarkup);
-    const isHome=p.code===home.code;
-    return `<tr${isHome?' style="background:var(--color-background-secondary);"':''}>
+  // Province table
+  const mL = {
+    'Gov wholesale': '<span class="mpill m-gov">Gov wholesale</span>',
+    'Hybrid':        '<span class="mpill m-hyb">Hybrid</span>',
+    'Private retail':'<span class="mpill m-priv">Private</span>',
+    'Gov monopoly':  '<span class="mpill m-gov">Gov monopoly</span>',
+  };
+  document.getElementById('prov-tbody').innerHTML = PROVINCES.map(p => {
+    const c2 = computeChain(p, landedCost, ocsMarkup);
+    const isHome = p.code === home.code;
+    return `<tr${isHome?' class="home-row"':''}>
       <td>${isHome?'<strong>':''}${p.name} / ${p.board}${isHome?'</strong>':''}</td>
       <td>${mL[p.model]||p.model}</td>
-      <td>${p.directToRetail?'LP direct':('+'+Math.round((p.wsMarkupFromOCS?ocsMarkup:p.wsMarkup||0)*100)+'%')}</td>
+      <td>+${Math.round((p.wsMarkupFromOCS?ocsMarkup:p.wsMarkup||0)*100)}%</td>
+      <td>${p.ecommMarkup>0?'+'+Math.round(p.ecommMarkup*100)+'%':'—'}</td>
       <td>${Math.round(p.hst*100)}%</td>
       <td>${p.addlDutyPct>0?fmtPct(p.addlDutyPct):'—'}</td>
       <td class="nr">${fmt(excise)}</td>
       <td class="nr">${fmt(c2.ws)}</td>
-      <td class="nr str">${fmt(c2.msrp)}</td></tr>`;
+      <td class="nr str">${fmt(c2.msrp)}</td>
+    </tr>`;
   }).join('');
 
   renderComp(chain.msrp);
 }
 
+// ── COMPETITIVE SET ───────────────────────────────────────────────────────────
 function renderComp(myMsrp){
-  const tbody=document.getElementById('comp-tbody');
+  const tbody = document.getElementById('comp-tbody');
   if(!competitors.length){
-    tbody.innerHTML='<tr><td colspan="6" style="color:var(--color-text-tertiary);font-size:11px;padding:8px 5px;">No competitors — paste retailer text above or add manually</td></tr>';
-    document.getElementById('comp-sum').textContent='';return;
+    tbody.innerHTML='<tr><td colspan="6" style="color:#a3a3a3;font-size:12px;padding:10px 6px;">No competitors added — paste retailer text above or add manually</td></tr>';
+    document.getElementById('comp-sum').textContent=''; return;
   }
-  tbody.innerHTML=competitors.map((c,i)=>{
-    const d=myMsrp>0?c.price-myMsrp:0;
-    const ds=d>0?'+$'+d.toFixed(2):d<0?'-$'+Math.abs(d).toFixed(2):'even';
-    const gpg=c.grams>0?'$'+(c.price/c.grams).toFixed(2)+'/g':'—';
-    return `<tr><td>${c.brand}</td><td>${c.sku}</td>
+  tbody.innerHTML = competitors.map((c,i) => {
+    const d = myMsrp > 0 ? c.price - myMsrp : 0;
+    const ds = d>0?'+$'+d.toFixed(2):d<0?'-$'+Math.abs(d).toFixed(2):'even';
+    const gpg = c.grams > 0 ? '$'+(c.price/c.grams).toFixed(2)+'/g' : '—';
+    return `<tr>
+      <td>${c.brand}</td><td>${c.sku}</td>
       <td class="nr">$${c.price.toFixed(2)}</td>
       <td class="nr"><span class="badge ${d>0?'bg':d<0?'br':'bn'}">${ds}</span></td>
       <td class="nr">${gpg}</td>
-      <td><button onclick="rmC(${i})" style="background:none;border:none;cursor:pointer;color:var(--color-text-tertiary);font-size:11px;">✕</button></td></tr>`;
+      <td><button onclick="rmC(${i})" style="background:none;border:none;cursor:pointer;color:#a3a3a3;font-size:14px;padding:0 4px;">✕</button></td>
+    </tr>`;
   }).join('');
-  if(myMsrp>0){
-    const avg=competitors.reduce((s,c)=>s+c.price,0)/competitors.length;
-    document.getElementById('comp-sum').textContent='Your MSRP '+fmt(myMsrp)+' is $'+Math.abs(myMsrp-avg).toFixed(2)+' '+(myMsrp<avg?'below':myMsrp>avg?'above':'at')+' comp avg ('+fmt(avg)+')';
+  if(myMsrp > 0){
+    const avg = competitors.reduce((s,c) => s+c.price, 0) / competitors.length;
+    document.getElementById('comp-sum').textContent =
+      'Your MSRP '+fmt(myMsrp)+' is $'+Math.abs(myMsrp-avg).toFixed(2)+' '+(myMsrp<avg?'below':myMsrp>avg?'above':'at')+' comp avg ('+fmt(avg)+')';
   }
 }
-window.rmC=function(i){competitors.splice(i,1);calculate();};
+window.rmC = i => { competitors.splice(i,1); calculate(); };
 
+// ── AI COMP PARSER ────────────────────────────────────────────────────────────
 async function parseCompText(){
-  const raw=document.getElementById('parse-input').value.trim();
-  if(!raw)return;
-  const btn=document.getElementById('parse-btn');
-  const status=document.getElementById('parse-status');
-  btn.disabled=true;status.className='parse-status loading';status.textContent='Extracting products…';
-  try{
-    const resp=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,messages:[{role:'user',content:`Extract cannabis product listings. Return ONLY a raw JSON array, no markdown. Each item: {"brand":"...","sku":"...","price":0.00,"grams":0}\n\nIf no products: []\n\nText:\n${raw.slice(0,3000)}`}]})});
-    const data=await resp.json();
-    const text=(data.content||[]).filter(b=>b.type==='text').map(b=>b.text).join('');
-    const parsed=JSON.parse(text.replace(/```json|```/g,'').trim());
-    if(!Array.isArray(parsed)||!parsed.length){status.className='parse-status err';status.textContent='No products found — check pasted text and try again.';btn.disabled=false;return;}
+  const raw = document.getElementById('parse-input').value.trim();
+  if(!raw) return;
+  const btn=document.getElementById('parse-btn'), status=document.getElementById('parse-status');
+  btn.disabled=true; status.className='parse-status loading'; status.textContent='Extracting products…';
+  try {
+    const resp = await fetch('https://api.anthropic.com/v1/messages', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({
+        model:'claude-sonnet-4-20250514', max_tokens:1000,
+        messages:[{role:'user', content:`Extract cannabis product listings from the text below. Return ONLY a raw JSON array, no markdown, no backticks. Each item: {"brand":"...","sku":"...","price":0.00,"grams":0}\n\nIf no products found, return: []\n\nText:\n${raw.slice(0,3000)}`}]
+      })
+    });
+    const data = await resp.json();
+    const text = (data.content||[]).filter(b=>b.type==='text').map(b=>b.text).join('');
+    const parsed = JSON.parse(text.replace(/```json|```/g,'').trim());
+    if(!Array.isArray(parsed)||!parsed.length){
+      status.className='parse-status err'; status.textContent='No products found — check pasted text and try again.';
+      btn.disabled=false; return;
+    }
     let added=0;
-    parsed.forEach(p=>{if(p.brand&&p.sku&&p.price>0){competitors.push({brand:String(p.brand),sku:String(p.sku),price:Number(p.price),grams:Number(p.grams)||0});added++;}});
-    status.className='parse-status done';status.textContent='Added '+added+' product'+(added!==1?'s':'')+'.';
+    parsed.forEach(p => { if(p.brand&&p.sku&&p.price>0){ competitors.push({brand:String(p.brand),sku:String(p.sku),price:Number(p.price),grams:Number(p.grams)||0}); added++; } });
+    status.className='parse-status done'; status.textContent='Added '+added+' product'+(added!==1?'s':'')+'.';
     document.getElementById('parse-input').value='';
     calculate();
-  }catch(e){status.className='parse-status err';status.textContent='Parse error — try again or add manually.';}
+  } catch(e){ status.className='parse-status err'; status.textContent='Parse error — try again or add manually.'; }
   btn.disabled=false;
 }
 
-// Event wiring
-document.getElementById('class-tabs').addEventListener('click',e=>{
-  const btn=e.target.closest('.class-tab');if(!btn)return;
-  document.querySelectorAll('.class-tab').forEach(t=>t.classList.remove('active'));
-  btn.classList.add('active');
-  currentClass=btn.dataset.class;currentSubcatIdx=0;competitors=[];
-  renderUI();calculate();
-});
-document.getElementById('subcat-sel').addEventListener('change',calculate);
-document.getElementById('home-prov').innerHTML=PROVINCES.map(p=>`<option value="${p.code}">${p.name} (${p.board})</option>`).join('');
-document.getElementById('home-prov').addEventListener('change',function(){
-  const p=getHomeProv();
-  document.getElementById('prov-duty-pct').value=(p.addlDutyPct*100).toFixed(2);
-  document.getElementById('prov-duty-src').textContent=({ON:'ON=3.9%',AB:'AB=16.8%',SK:'SK=6.45%',NU:'NU=19.3%'})[p.code]||'0%';
+// ── INIT & EVENT WIRING ───────────────────────────────────────────────────────
+document.getElementById('home-prov').innerHTML = PROVINCES.map(p =>
+  `<option value="${p.code}">${p.name} (${p.board})</option>`
+).join('');
+
+document.getElementById('home-prov').addEventListener('change', function(){
+  const p = getHomeProv();
+  document.getElementById('prov-duty-pct').value = (p.addlDutyPct*100).toFixed(2);
+  document.getElementById('prov-duty-src').textContent =
+    ({ON:'ON=3.9%',AB:'AB=16.8%',SK:'SK=6.45%',NU:'NU=19.3%'})[p.code]||'0%';
   calculate();
-});
-['licence-class','annual-revenue','sku-units','gtm','freight','partner','prov-duty-pct','tgt-margin'].forEach(id=>{
-  const el=document.getElementById(id);if(el){el.addEventListener('input',calculate);el.addEventListener('change',calculate);}
-});
-document.getElementById('parse-btn').addEventListener('click',parseCompText);
-document.getElementById('parse-input').addEventListener('keydown',e=>{if(e.key==='Enter'&&(e.metaKey||e.ctrlKey))parseCompText();});
-document.getElementById('add-comp').addEventListener('click',()=>{
-  const b=document.getElementById('cb-in').value.trim(),s=document.getElementById('cs-in').value.trim(),p=parseFloat(document.getElementById('cp-in').value);
-  if(!b||!s||isNaN(p)||p<=0)return;
-  competitors.push({brand:b,sku:s,price:p,grams:0});
-  document.getElementById('cb-in').value='';document.getElementById('cs-in').value='';document.getElementById('cp-in').value='';
-  calculate();
-});
-document.getElementById('reset-btn').addEventListener('click',()=>{competitors=[];renderUI();calculate();});
-document.getElementById('export-btn').addEventListener('click',()=>{
-  const name=document.getElementById('pname').value||'Product';
-  const cls=getClassCfg();const sc=getSubcat();const home=getHomeProv();
-  sendPrompt(`Export full pricing summary for ${name} (${cls.label} — ${sc.label}) in ${home.name}: MSRP ${document.getElementById('fc-msrp').textContent}, wholesale ${document.getElementById('fc-ws').textContent}, gross margin ${document.getElementById('mpct').textContent}, excise ${document.getElementById('bd-excise').textContent} (${document.getElementById('bd-excise-m').textContent}), reg fee/unit ${document.getElementById('bd-regfee').textContent}. Include province MSRP table and comp set. Format for pitch deck.`);
 });
 
-renderUI();calculate();
+document.getElementById('class-tabs').addEventListener('click', e => {
+  const btn = e.target.closest('.class-tab'); if(!btn) return;
+  document.querySelectorAll('.class-tab').forEach(t => t.classList.remove('active'));
+  btn.classList.add('active');
+  currentClass=btn.dataset.class; currentSubcatIdx=0; competitors=[];
+  renderUI(); calculate();
+});
+
+document.getElementById('subcat-sel').addEventListener('change', calculate);
+document.getElementById('goal-msrp').addEventListener('input', calculate);
+
+document.querySelectorAll('.lbtn').forEach(btn => btn.addEventListener('click', () => {
+  document.querySelectorAll('.lbtn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  licenceClass = btn.dataset.class;
+  updateLicenceUI(); calculate();
+}));
+
+['gtm','freight','partner','prov-duty-pct','tgt-margin'].forEach(id => {
+  const el = document.getElementById(id);
+  if(el){ el.addEventListener('input', calculate); el.addEventListener('change', calculate); }
+});
+
+document.getElementById('parse-btn').addEventListener('click', parseCompText);
+document.getElementById('parse-input').addEventListener('keydown', e => {
+  if(e.key==='Enter' && (e.metaKey||e.ctrlKey)) parseCompText();
+});
+
+document.getElementById('add-comp').addEventListener('click', () => {
+  const b=document.getElementById('cb-in').value.trim();
+  const s=document.getElementById('cs-in').value.trim();
+  const p=parseFloat(document.getElementById('cp-in').value);
+  if(!b||!s||isNaN(p)||p<=0) return;
+  competitors.push({brand:b, sku:s, price:p, grams:0});
+  document.getElementById('cb-in').value='';
+  document.getElementById('cs-in').value='';
+  document.getElementById('cp-in').value='';
+  calculate();
+});
+
+document.getElementById('reset-btn').addEventListener('click', () => { competitors=[]; renderUI(); calculate(); });
+document.getElementById('export-btn').addEventListener('click', () => window.print());
+
+function renderUI(){ renderSubcats(); renderCogsInputs(); renderExciseInputs(); renderOCSSubcat(); renderClassNotice(); }
+updateLicenceUI(); renderUI(); calculate();
 </script>
+</body>
+</html>
