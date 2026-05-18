@@ -266,7 +266,7 @@ hr{border:none;border-top:1px solid var(--c-border-2);margin:1.25rem 0;}
   <div class="rs" id="rs-calc-i"><div class="rl">Calculated MSRP</div><div class="rv" id="rs-calc">—</div><div class="rs2" id="rs-calc-s">from your landed cost</div></div>
   <div class="rs" id="rs-gap-i"><div class="rl">Gap to target</div><div class="rv" id="rs-gap">—</div><div class="rs2" id="rs-gap-s">—</div></div>
   <div class="rs" id="rs-mg-i"><div class="rl">Gross margin</div><div class="rv" id="rs-mg">—</div><div class="rs2" id="rs-mg-s">—</div></div>
-  <div class="rs"><div class="rl">Board wholesale</div><div class="rv" id="rs-ws">—</div><div class="rs2" id="rs-ws-s">what the board pays you</div></div>
+  <div class="rs"><div class="rl">OCS pays you</div><div class="rv" id="rs-ws">—</div><div class="rs2" id="rs-ws-s">your landed cost</div></div>
 </div>
 
 <div class="wrap">
@@ -367,9 +367,9 @@ hr{border:none;border-top:1px solid var(--c-border-2);margin:1.25rem 0;}
 <div class="mrow">
   <div class="cb"><div class="cl">Excise</div><div class="cv" id="bd-ex">—</div><div class="cs" id="bd-ex-m">—</div></div>
   <div class="cb"><div class="cl">Reg. fee</div><div class="cv" id="bd-rf">—</div><div class="cs" id="bd-rf-s">—</div></div>
-  <div class="cb"><div class="cl">Net revenue</div><div class="cv" id="bd-net">—</div><div class="cs">Landed − excise</div></div>
-  <div class="cb"><div class="cl">Total COGS</div><div class="cv" id="bd-cogs">—</div><div class="cs">all-in per unit</div></div>
-  <div class="cb" id="bd-mgbox"><div class="cl">Gross margin</div><div class="cv" id="bd-mg">—</div><div class="cs" id="bd-mg-s">—</div></div>
+  <div class="cb"><div class="cl">Net revenue</div><div class="cv" id="bd-net">—</div><div class="cs">for fee calc base</div></div>
+  <div class="cb"><div class="cl">Total costs</div><div class="cv" id="bd-cogs">—</div><div class="cs">excise + COGS + fees</div></div>
+  <div class="cb" id="bd-mgbox"><div class="cl">Profit per unit</div><div class="cv" id="bd-mg">—</div><div class="cs" id="bd-mg-s">margin %</div></div>
 </div>
 
 <hr/>
@@ -436,7 +436,7 @@ hr{border:none;border-top:1px solid var(--c-border-2);margin:1.25rem 0;}
 
 <div class="arow">
   <button class="btn-s" id="reset-btn">Reset</button>
-  <button class="btn-p" id="export-btn">Print / Save PDF</button>
+  <button class="btn-p" id="export-btn">How to save as PDF ↗</button>
 </div>
 
 </div><!-- /wrap -->
@@ -838,13 +838,17 @@ function calc(){
   const mu=ocs();
   const p=prov();
 
-  const netRev=lc-ex;
-  const rfAmt=netRev*rr;
-  const dutyAmt=netRev*dutyPct;
-  const base=lcOverride?(lc-ex):rawC;
-  const totalC=base+gtm+fr+part+rfAmt+dutyAmt;
-  const gm=netRev-totalC;
-  const margin=netRev>0?gm/netRev:0;
+  // ── Margin calculation ─────────────────────────────────────────────────
+  // Landed cost = what OCS pays you = your revenue per unit
+  // COGS = everything it costs to produce and deliver (excise + manufacturing + overhead)
+  // Profit = Landed − COGS
+  // Margin = Profit ÷ Landed
+  const netRevForFees=lc-ex; // base for reg fee % (standard practice)
+  const rfAmt=netRevForFees*rr;
+  const dutyAmt=netRevForFees*dutyPct;
+  const totalCosts=ex+rawC+gtm+fr+part+rfAmt+dutyAmt; // all costs to produce this unit
+  const profit=lc-totalCosts;  // what you keep after costs
+  const margin=lc>0?profit/lc:0;
 
   const ch=chain(p,lc,mu);
 
@@ -860,11 +864,12 @@ function calc(){
 
   $('rs-tgt').textContent=tMsrp>0?fmt(tMsrp):'—';
   $('rs-calc').textContent=fmt(ch.msrp);
-  $('rs-ws').textContent=fmt(ch.ws);
-  $('rs-ws-s').textContent=p.board+' pays you';
+  $('rs-ws').textContent=fmt(lc);
+  $('rs-ws-s').textContent=p.board+' pays you (your landed cost)';
   if(tMsrp>0){const gap=ch.msrp-tMsrp;$('rs-gap').textContent=(gap>=0?'+':'')+fmt(gap);$('rs-gap-s').textContent=gap>0?'above target — room to reduce COGS':gap<0?'below target — COGS too high':'exactly on target';$('rs-gap-i').className='rs'+(gap>0?' good':gap<0?' bad':'');}
   else{$('rs-gap').textContent='—';$('rs-gap-s').textContent='Enter target MSRP to compare';$('rs-gap-i').className='rs';}
-  $('rs-mg').textContent=fmtP(margin);$('rs-mg-s').textContent='target: '+fmtP(tgt);
+  $('rs-mg').textContent=(profit>=0?'+':'')+fmt(profit);
+  $('rs-mg-s').textContent=fmtP(margin)+' margin · target: '+fmtP(tgt);
   $('rs-mg-i').className='rs'+(margin>=tgt?' good':margin>=tgt*0.8?' warn':' bad');
 
   $('chain-lbl').textContent=p.name+' ('+p.board+')';
@@ -880,31 +885,29 @@ function calc(){
   const mb=$('mbar');mb.style.width=Math.max(0,Math.min(100,mpct))+'%';mb.className='mfill'+(margin>=tgt?' g':margin>=tgt*0.8?' w':' b');
   $('mpct').textContent=fmtP(margin);
   $('mbadge').innerHTML=margin>=tgt?'<span class="badge g">On target</span>':margin>=tgt*0.8?'<span class="badge w">Near target</span>':'<span class="badge r">Below target</span>';
-  $('mvt').textContent='Target: '+fmtP(tgt)+' · Gap: '+fmtP(margin-tgt);
+  $('mvt').textContent='Profit: '+(profit>=0?'+':'')+fmt(profit)+' · Target margin: '+fmtP(tgt)+' · Gap: '+fmtP(margin-tgt);
 
+  // Breakdown: landed (revenue) at top, costs below, profit = difference
   let bdH='';
-  if(!lcOverride){
-    fields.forEach(f=>{if(f.v>0)bdH+=`<div class="brow"><span class="bl">${f.l}</span><span class="bv">${fmt(f.v)}</span></div>`;});
-    bdH+=`<div class="brow"><span class="bl">COGS subtotal</span><span class="bv">${fmt(rawC)}</span></div>`;
-    bdH+=`<div class="brow"><span class="bl">+ Excise duty <span class="bh">(${meth})</span></span><span class="bv">${fmt(ex)}</span></div>`;
-    bdH+=`<div class="brow"><span class="bl">= Landed cost</span><span class="bv">${fmt(lc)}</span></div>`;
-  } else {
-    bdH+=`<div class="brow"><span class="bl">Landed cost <span class="bh">(manual)</span></span><span class="bv">${fmt(lc)}</span></div>`;
-    bdH+=`<div class="brow"><span class="bl">Excise duty <span class="bh">(${meth})</span></span><span class="bv">${fmt(ex)}</span></div>`;
-  }
+  bdH+=`<div class="brow" style="background:#f0fdf4;padding:6px 8px;border-radius:4px;margin-bottom:4px;"><span class="bl" style="font-weight:700;color:#166534;">Landed cost <span style="font-weight:400;font-size:10px;">(OCS pays you)</span></span><span class="bv" style="font-weight:700;color:#166534;">${fmt(lc)}</span></div>`;
+  bdH+=`<div class="brow"><span class="bl" style="color:#a3a3a3;font-size:10px;">YOUR COSTS</span><span class="bv"></span></div>`;
+  fields.forEach(f=>{if(f.v>0)bdH+=`<div class="brow"><span class="bl">${f.l}</span><span class="bv">${fmt(f.v)}</span></div>`;});
+  if(rawC>0)bdH+=`<div class="brow"><span class="bl">COGS subtotal</span><span class="bv">${fmt(rawC)}</span></div>`;
+  bdH+=`<div class="brow"><span class="bl">Excise duty <span class="bh">(${meth})</span></span><span class="bv">${fmt(ex)}</span></div>`;
   if(gtm>0)bdH+=`<div class="brow"><span class="bl">Go-to-market</span><span class="bv">${fmt(gtm)}</span></div>`;
   if(fr>0)bdH+=`<div class="brow"><span class="bl">Freight</span><span class="bv">${fmt(fr)}</span></div>`;
   if(part>0)bdH+=`<div class="brow"><span class="bl">Partner fee</span><span class="bv">${fmt(part)}</span></div>`;
-  bdH+=`<div class="brow"><span class="bl">Reg. fee <span class="bh">(${fmtP(rr)} of net rev)</span></span><span class="bv">${fmt(rfAmt)}</span></div>`;
-  if(dutyAmt>0)bdH+=`<div class="brow"><span class="bl">Prov. additional duty <span class="bh">(${fmtP(dutyPct)} of net rev)</span></span><span class="bv">${fmt(dutyAmt)}</span></div>`;
-  bdH+=`<div class="brow"><span class="bl">Total COGS (all-in per unit)</span><span class="bv">${fmt(totalC)}</span></div>`;
+  bdH+=`<div class="brow"><span class="bl">Reg. fee <span class="bh">(${fmtP(rr)} × net)</span></span><span class="bv">${fmt(rfAmt)}</span></div>`;
+  if(dutyAmt>0)bdH+=`<div class="brow"><span class="bl">Prov. additional duty <span class="bh">(${fmtP(dutyPct)} × net)</span></span><span class="bv">${fmt(dutyAmt)}</span></div>`;
+  bdH+=`<div class="brow"><span class="bl" style="font-weight:600;">Total costs</span><span class="bv" style="font-weight:600;">${fmt(totalCosts)}</span></div>`;
+  bdH+=`<div class="brow" style="margin-top:4px;"><span class="bl" style="font-weight:700;">Profit per unit</span><span class="bv" style="font-weight:700;font-size:15px;color:${profit>=0?'#166534':'#991b1b'}">${profit>=0?'+':''}${fmt(profit)}</span></div>`;
   $('bd').innerHTML=bdH;
 
   $('bd-mgbox').className='cb'+(margin>=tgt?' ok':margin>=tgt*0.8?' wn':' dn');
   $('bd-ex').textContent=fmt(ex);$('bd-ex-m').textContent=meth;
   $('bd-rf').textContent=fmt(rfAmt);$('bd-rf-s').textContent=fmtP(rr)+' of net rev';
-  $('bd-net').textContent=fmt(netRev);$('bd-cogs').textContent=fmt(totalC);
-  $('bd-mg').textContent=fmt(gm);$('bd-mg-s').textContent=fmtP(margin);
+  $('bd-net').textContent=fmt(netRevForFees);$('bd-cogs').textContent=fmt(totalCosts);
+  $('bd-mg').textContent=(profit>=0?'+':'')+fmt(profit);$('bd-mg-s').textContent=fmtP(margin)+' margin';
 
   const mL={'Gov wholesale':'<span class="mpill m-gov">Gov wholesale</span>','Hybrid':'<span class="mpill m-hyb">Hybrid</span>','Private retail':'<span class="mpill m-priv">Private</span>','Gov monopoly':'<span class="mpill m-gov">Gov monopoly</span>'};
   $('prov-tbody').innerHTML=PROV.map(pp=>{const c2=chain(pp,lc,mu),ih=pp.code===p.code;
@@ -1061,7 +1064,9 @@ $('subcat-sel').addEventListener('change',calc);
 ['target-msrp','tgt-margin','gtm','freight','partner','prov-duty'].forEach(id=>{const el=$(id);if(el){el.addEventListener('input',calc);el.addEventListener('change',calc);}});
 document.querySelectorAll('.lbtn').forEach(btn=>btn.addEventListener('click',()=>{document.querySelectorAll('.lbtn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');licClass=btn.dataset.class;calc();}));
 $('reset-btn').addEventListener('click',()=>{competitors=[];lcOverride=false;renderUI();calc();});
-$('export-btn').addEventListener('click',()=>window.print());
+$('export-btn').addEventListener('click',()=>{
+  alert('To save as PDF:\n\n1. Open index.html directly in Chrome or Safari\n2. Press Cmd+P (Mac) or Ctrl+P (Windows)\n3. Choose "Save as PDF" as the destination\n\nThe file is available on GitHub Pages or from your downloaded index.html.');
+});
 
 function renderUI(){renderSubcats();renderCogs();renderExcise();renderOCS();renderNotice();}
 loadSets();renderUI();calc();
